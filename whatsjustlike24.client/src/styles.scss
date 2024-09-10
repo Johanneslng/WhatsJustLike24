@@ -26,45 +26,73 @@ body {
 .header {
   height: 10vh;
   background-color: #7260E6;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 2% 100% );
+  //clip-path: polygon(0 0, 100% 0, 100% 100%, 3.8% 100% );
   position: relative;
 }
 
+.logo-and-title {
+  display: flex;
+  align-items: center;
+}
+
+.logo-and-title > div {
+    margin-right: 1.5rem;
+}
+
 .logo-box {
-    position: absolute;
-    top: 0px;
-    left: 0px;
+  top: 0px;
+  left: 0px;
 }
 
-.logo {
-    height: 10vh;
+.logo-svg {
+  height: 10vh;
 }
 
-.header-title {
-    position: absolute;
-    left: 10vw;
+
+.title-container {
+    display: flex;
     color: #ffffff;
     font-weight: 800;
-    font-size: 6vh;
+    font-size: 3vh;
+    gap: 1.2rem;
 }
 
-.header-just{
-    position: relative;
-    animation-name: moveInTop;
-    animation-duration: 3s;
-}
+  .header-just {
+    animation-name: moveInJust;
+    animation-duration: 1s;
+    animation-timing-function: ease-in;
+  }
 
-@keyframes moveInTop {
+  .header-just:hover {
+    animation: moveInJust 1s ease-in;
+  }
+
+  @keyframes moveInJust {
     0% {
-        opacity: 0;
-        transform: translateY(-100px);
+      transform: rotate(6deg);
     }
-    80% {
-        opacity: 0.8;
-        transform: translateY(10px);
+
+    50% {
+      transform: rotate(6deg);
     }
+
+    70% {
+      transform: rotate(-3deg);
+    }
+
     100% {
-        opacity: 1;
-        transform: translateY(0);
+      transform: rotate(0);
     }
-}
+  }
+
+  @keyframes slideIn {
+    0% {
+      transform: rotate();
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+
