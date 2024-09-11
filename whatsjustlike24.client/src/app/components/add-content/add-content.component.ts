@@ -15,7 +15,7 @@ export class AddContentComponent {
   private searchValueSubscription: Subscription;
 
   constructor(
-    public dialog: MatDialog;
+    public dialog: MatDialog,
     private setSearchValueService: SetSearchValueService
   ) {
     this.searchValueSubscription = this.setSearchValueService.getSearchValue().subscribe(
