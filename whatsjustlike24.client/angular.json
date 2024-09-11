@@ -60,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "whatsjustlike24.client:build:production"
+              "buildTarget": "whatsjustlike24.client:build:production"
             },
             "development": {
-              "browserTarget": "whatsjustlike24.client:build:development"
+              "buildTarget": "whatsjustlike24.client:build:development"
             }
           },
           "defaultConfiguration": "development",
@@ -74,7 +74,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "whatsjustlike24.client:build"
+            "buildTarget": "whatsjustlike24.client:build"
           }
         },
         "test": {
