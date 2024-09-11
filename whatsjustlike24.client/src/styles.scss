@@ -23,20 +23,53 @@ body {
   color: #2b2b2b
 }
 
+.btn {
+  padding: 0.5vh 1.5vh;
+  font-size: 2.5vh; 
+  color: black;
+  background-color: #CDC1FF;
+  border: none;
+  border-radius: 3px; 
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration:none;
+}
+
+.btn:hover {
+  background-color: #ffffff;
+  box-shadow: 1px 3px 5px 3px rgba(0,0,0,0.2);
+  transform: translateY(-3px);
+}
+.btn:active {
+  background-color: #8a6dff;
+}
+
+.btn:focus {
+  outline: none; 
+  box-shadow: 0 0 0 3px #ffffff; 
+}
+
 .header {
   height: 10vh;
   background-color: #7260E6;
-  //clip-path: polygon(0 0, 100% 0, 100% 100%, 3.8% 100% );
   position: relative;
+  //align-items: center;
 }
 
+.header-left-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 .logo-and-title {
   display: flex;
+  flex-direction: row;
   align-items: center;
 }
 
 .logo-and-title > div {
-    margin-right: 1.5rem;
+    margin-right: 3vh;
+    margin-top: -3px;
 }
 
 .logo-box {
@@ -54,18 +87,30 @@ body {
     color: #ffffff;
     font-weight: 800;
     font-size: 3vh;
-    gap: 1.2rem;
+    gap: 2vh;
 }
 
-  .header-just {
-    animation-name: moveInJust;
-    animation-duration: 1s;
-    animation-timing-function: ease-in;
-  }
+.header-just {
+  animation-name: moveInJust;
+  animation-duration: 1s;
+  animation-timing-function: ease-in;
+}
 
-  .header-just:hover {
-    animation: moveInJust 1s ease-in;
-  }
+.header-just:hover {
+  animation: moveInJust 1s ease-in;
+}
+
+
+.auth-buttons{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 10vh;
+    width: 20vw;
+}
+
+
 
   @keyframes moveInJust {
     0% {
