@@ -1,0 +1,37 @@
+<div class="display-movies" *ngIf="similarMovies.length !== 0">
+  <h2>These are just like:</h2>
+  <div class="movie-table">
+    <div mat-card-avatar class="movie-header-image"></div>
+    {{ searchMovie.title }}
+
+    <img [src]="searchMovie.posterPath" alt="Thumbnail">
+
+    <cdk-virtual-scroll-viewport itemSize="300" class="cards-container">
+
+      <div *cdkVirtualFor="let movie of similarMovies; let i = index;">
+
+        <div class="movie-details">
+          <div class="similarity-details">
+            <p>Similarity: {{movie.averageSimilarityScore}}</p>
+            <p>Similarity Score Count: {{ movie.similarityScoreCount }}</p>
+          </div>
+          <div class="movie-info">
+            <div mat-card-avatar class="movie-header-image"></div>
+            {{ movie.title }}
+            <img [src]="movie.posterPath" alt="Thumbnail">
+          </div>
+        </div>
+        <button (click)="openMovieDetails(movie)">Details</button>
+      </div>
+  </cdk-virtual-scroll-viewport>
+    <div *ngIf="isLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+
+  <div *ngIf="similarMovies.length === 0 && !isLoading && hasSearched">
+    <h2>There are no movies like {{ currentSearchValue }} in our Database</h2>
+    <button color="secondary" (click)="exchangecurrentSearchValueWithSimilarTitle()">
+      Did you mean {{ similarTitle }}?
+    </button>
+  </div>
+</div>
