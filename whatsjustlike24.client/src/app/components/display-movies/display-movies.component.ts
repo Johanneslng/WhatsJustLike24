@@ -27,6 +27,7 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
   currentSearchValue: string = '';
   isLoading: boolean = false;
   hasSearched: boolean = false;
+
   hoveredMovie: SimilarMovie = {
     title: '',
     averageSimilarityScore: 0,
@@ -42,6 +43,8 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
     posterPath: '',
     description: '',
   };
+
+  selectedIndex: number = 0;
 
   private searchValueSubscription?: Subscription;
 
@@ -135,4 +138,13 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
     });
   }
 
+  public onClick() {
+    this.selectedIndex += 1;
+  }
+
+  public onClick2() {
+    if (this.selectedIndex > 0) {
+      this.selectedIndex -= 1;
+    }
+  }
 }

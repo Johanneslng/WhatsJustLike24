@@ -45,49 +45,62 @@ COLORS:
     dark pastel green: #0CCA4A
 */
 
+$primary-color: #636DF8;
+$secondary-color: #FFC05C;
+  $secondary-lighter1: #ffe1b0;
+$tertiary-color: black; //Placeholder
+
+$warn-color: #DB222A;
+$success-color: #80FF72;
+$text-grey: #2b2b2b;
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+    font-size: 10px;
+}
+
 body {
   font-family: "Lexend", sans-serif;
   font-weight: 400;
-  font-size: 16px;
+  //font-size: 16px;
   line-height: 1.7;
-  color: #2b2b2b
+  color: $text-grey;
 }
 
 .btn {
-  padding: 0.5vh 1.5vh;
-  font-size: 2.5vh; 
+  padding: 1rem 2rem;
+  font-size: 2rem; 
   color: black;
-  background-color: #CDC1FF;
+  background-color: $secondary-color;
   border: none;
-  border-radius: 3px; 
+  border-radius: 0.5rem; 
   cursor: pointer;
   transition: background-color 0.3s ease;
   text-decoration:none;
 }
 
 .btn:hover {
-  background-color: #ffffff;
-  box-shadow: 1px 3px 5px 3px rgba(0,0,0,0.2);
-  transform: translateY(-3px);
+  background-color: $secondary-lighter1;
+  box-shadow: .1rem .3rem .3rem rgba(0,0,0,0.2);
+  transform: translateY(-.3rem);
 }
 .btn:active {
-  background-color: #8a6dff;
+  background-color: $secondary-lighter1;
 }
 
 .btn:focus {
   outline: none; 
-  box-shadow: 0 0 0 3px #ffffff; 
+  box-shadow: 0 0 0 0.3rem #ffffff; 
 }
 
 .header {
-  height: 10vh;
-  background-color: #7260E6;
+  height: 7rem;
+  background-color: $primary-color;
   position: relative;
   //align-items: center;
 }
@@ -100,21 +113,24 @@ body {
 .logo-and-title {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  //align-items: center;
+  vertical-align: middle;
 }
 
 .logo-and-title > div {
-    margin-right: 3vh;
-    margin-top: -3px;
+    margin-right: 2rem;
+    //margin-top: 1rem;
 }
 
 .logo-box {
-  top: 0px;
-  left: 0px;
+  top: 0rem;
+  left: 0rem;
 }
 
 .logo-svg {
-  height: 10vh;
+  height: 5rem;
+  margin-top: 1rem;
+  margin-left: 0.5rem;
 }
 
 
@@ -122,8 +138,9 @@ body {
     display: flex;
     color: #ffffff;
     font-weight: 800;
-    font-size: 3vh;
-    gap: 2vh;
+    font-size: 2rem;
+    gap: 1rem;
+    margin-top: 0.3rem;
 }
 
 .header-just {
@@ -142,10 +159,16 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 10vh;
-    width: 20vw;
+    height: 0.5rem;
+    gap: 1rem;
+
 }
 
+.btn-auth {
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  margin-top: 7.2rem;
+}
 
 
   @keyframes moveInJust {

@@ -1,25 +1,24 @@
-<h1>
-  What
-  <mat-form-field class="inline-form-field">
-    <mat-label>Select a Medium</mat-label>
-    <mat-select>
-      @for (type of types; track type)
-      {<mat-option [value]="type">{{ type }}</mat-option>}
-    </mat-select>
-  </mat-form-field>
-  is just like
-  <mat-form-field class="inline-search">
-    <input matInput
-           type="text"
-           [(ngModel)]="searchValue"
-           placeholder="Enter Movie Title"
-           required />
-  </mat-form-field>
-  <button class="btn"
-          color="primary"
-          (click)="updateSearchString()">
-    Search
-  </button>
-</h1>
-
+<div class="search">
+  <h1 class="search">What</h1>
+    <mat-form-field class="inline-form-field">
+      <mat-label>Select a Medium</mat-label>
+      <mat-select class="search">
+        @for (type of types; track type)
+        {<mat-option [value]="type">{{ type }}</mat-option>}
+      </mat-select>
+    </mat-form-field>
+    <h1 class="search">is just like</h1> 
+    <mat-form-field class="inline-search">
+      <input matInput
+             type="text"
+             [(ngModel)]="searchValue"
+             placeholder="Enter Movie Title"
+             required />
+    </mat-form-field>
+    <button class="btn search"
+            color="primary"
+            (click)="updateSearchString()">
+      Search
+    </button>
+</div>
 
