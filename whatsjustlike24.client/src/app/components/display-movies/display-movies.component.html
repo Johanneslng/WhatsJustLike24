@@ -24,8 +24,8 @@
          *ngFor="let movie of similarMovies; let i = index;"
          [ngClass]="{
          'selected' : i ===selectedIndex % similarMovies.length,
-         'previous' : i ===(selectedIndex - 1) % similarMovies.length,
-         'next' : i ===(selectedIndex + 1) % similarMovies.length,
+         'previous' : i ===(selectedIndex % similarMovies.length - 1),
+         'next' : i ===(selectedIndex % similarMovies.length + 1) ,
          'hideTop' : i < (selectedIndex % similarMovies.length - 1),
          'hideBottom': i > (selectedIndex % similarMovies.length +1 )
            }">
