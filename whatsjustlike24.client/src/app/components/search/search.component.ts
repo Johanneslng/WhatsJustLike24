@@ -5,6 +5,7 @@ import {
   Input
 } from '@angular/core';
 import { SetSearchValueService } from 'src/app/services/set-search-value.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-search',

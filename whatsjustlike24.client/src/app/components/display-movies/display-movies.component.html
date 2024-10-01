@@ -1,53 +1,55 @@
 <div class="display-movies" *ngIf="similarMovies.length !== 0">
-  <h2>These are just like:</h2>
-  <div class="movie-table">
-    <div mat-card-avatar class="movie-header-image"></div>
-    {{ searchMovie.title }}
-    <div *ngIf="similarMovies?.length">
-      <div *ngFor="let movie of similarMovies" class="movie-card">
-        <img [src]="movie.posterPath" alt="{{ movie.title }}" class="movie-poster">
-        <div class="movie-details">
-          <h2>{{ movie.title }}</h2>
-          <p><strong>Similarity Score:</strong> {{ movie.averageSimilarityScore }} (based on {{ movie.similarityScoreCount }} ratings)</p>
-          <p><strong>Description:</strong> {{ movie.descriptionList }}</p>
-          <p><strong>Similarity Scores:</strong> {{ movie.similarityScoreList }}</p>
+  <h2>These are just like {{searchMovie.title}}:</h2>
+
+  <div *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+ <div class="movie-comparison">
+  <div class="original-movie" *ngIf="similarMovies.length !== 0">
+    <img [src]="searchMovie.posterPath" alt="{{ searchMovie.title }}" />
+    <div class="movie-info">
+      <h3>{{searchMovie.title}}</h3>
+    </div>
+  </div>
+
+  <div class="comparison-sign">
+    <h1 *ngIf="similarMovies[selectedIndex% similarMovies.length].averageSimilarityScore <= 1">≠</h1>
+    <h1 *ngIf="similarMovies[selectedIndex% similarMovies.length].averageSimilarityScore <= 3">≈</h1>
+    <h1 *ngIf="similarMovies[selectedIndex% similarMovies.length].averageSimilarityScore >  3">=</h1>
+  </div>
+
+  <div class="slider-container" *ngIf="similarMovies?.length">
+    <div class="slider-item"
+         *ngFor="let movie of similarMovies; let i = index;"
+         [ngClass]="{
+         'selected' : i ===selectedIndex % similarMovies.length,
+         'previous' : i ===(selectedIndex - 1) % similarMovies.length,
+         'next' : i ===(selectedIndex + 1) % similarMovies.length,
+         'hideTop' : i < (selectedIndex % similarMovies.length - 1),
+         'hideBottom': i > (selectedIndex % similarMovies.length +1 )
+           }">
+      <div class="slider-movie">
+        <img [src]="movie.posterPath" alt="{{ movie.title }}" />
+        <div class="movie-info">
+          <h3>{{ movie.title }}</h3>
+          <p>Similarity: {{ movie.averageSimilarityScore }}</p>
+          <p>Rating: {{ movie.similarityScoreCount }}</p>
           <button (click)="openMovieDetails(movie)">Details</button>
         </div>
       </div>
-    </div>
 
-
-
-
-    <div *ngIf="isLoading">
-      <mat-spinner></mat-spinner>
-    </div>
-
-    <div *ngIf="similarMovies.length === 0 && !isLoading && hasSearched">
-      <h2>There are no movies like {{ currentSearchValue }} in our Database</h2>
-      <button color="secondary" (click)="exchangecurrentSearchValueWithSimilarTitle()">
-        Did you mean {{ similarTitle }}?
-      </button>
     </div>
   </div>
+</div> 
+  <button (click)="onClick()">+1</button>
+  <button (click)="onClick2()">-1</button>
 
-</div>
-<button (click)="onClick()">+1</button>
-<button (click)="onClick2()">-1</button>
-
-<div class="slider-container" *ngIf="similarMovies.length !== 0">
-  <div class="slider-item"
-       *ngFor="let movie of similarMovies; let i = index;"
-       [ngClass]="{
-       'selected' : i === selectedIndex,
-       'previous' : i === selectedIndex -1,
-       'next' : i === selectedIndex +1,
-       'hideTop' : i === selectedIndex -1,
-       'hideBottom' : i > selectedIndex +1
-    }"
-    >
-    <img [src]="movie.posterPath" alt="{{ movie.title }}" class="slider-movie" />
+  <div *ngIf="similarMovies.length === 0 && !isLoading && hasSearched">
+    <h2>There are no movies like {{ currentSearchValue }} in our Database</h2>
+    <button color="secondary" (click)="exchangecurrentSearchValueWithSimilarTitle()">
+      Did you mean {{ similarTitle }}?
+    </button>
   </div>
 </div>
-
 
