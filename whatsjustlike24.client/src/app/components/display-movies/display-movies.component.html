@@ -38,18 +38,13 @@
           <button (click)="openMovieDetails(movie)">Details</button>
         </div>
       </div>
-
     </div>
   </div>
-</div> 
-  <button (click)="onClick()">+1</button>
-  <button (click)="onClick2()">-1</button>
-
+ </div>
+</div>
   <div *ngIf="similarMovies.length === 0 && !isLoading && hasSearched">
     <h2>There are no movies like {{ currentSearchValue }} in our Database</h2>
     <button color="secondary" (click)="exchangecurrentSearchValueWithSimilarTitle()">
       Did you mean {{ similarTitle }}?
     </button>
   </div>
-</div>
-

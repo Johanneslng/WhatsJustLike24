@@ -1,7 +1,10 @@
 import {
   Component,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  HostListener,
+  ElementRef,
+  ViewChild
 } from '@angular/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { GetMoviesService } from 'src/app/services/apiCalls/get-movies.service';
@@ -52,7 +55,8 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
     private getMoviesService: GetMoviesService
     , private setSearchValueService: SetSearchValueService
     , public dialog: MatDialog
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.searchValueSubscription = this.setSearchValueService.getSearchValue().subscribe(
@@ -103,7 +107,7 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
       .subscribe((response: SimilarMovie[]) => {
         this.similarMovies = response.map(movie => ({
           ...movie,
-          posterPath: this.imageUrl + movie.posterPath // Concatenate imageUrl with posterPath
+          posterPath: this.imageUrl + movie.posterPath
         }));
         this.isLoading = false;
       }, error => {
@@ -127,6 +131,7 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
   public exchangecurrentSearchValueWithSimilarTitle() {
     this.currentSearchValue = this.similarTitle;
     this.fetchMovies(this.similarTitle);
+    this.fetchSearchMovieDetails(this.similarTitle);
     this.similarTitle = '';
 
   }
@@ -138,13 +143,12 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onClick() {
-    this.selectedIndex += 1;
-  }
-
-  public onClick2() {
-    if (this.selectedIndex > 0) {
-      this.selectedIndex -= 1;
-    }
+  @HostListener('wheel', ['$event'])
+  onScroll(event: WheelEvent) {
+      if (event.deltaY > 0) {
+        this.selectedIndex = (this.selectedIndex + 1) % this.similarMovies.length;
+      } else {
+        this.selectedIndex = (this.selectedIndex - 1 + this.similarMovies.length) % this.similarMovies.length;
+      }
   }
 }
