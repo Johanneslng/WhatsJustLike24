@@ -1,1 +1,30 @@
-<p>login works!</p>
+
+
+
+<mat-dialog-content class="mat-typography">
+  <div class="login-container">
+    <p>Login</p>
+    <form (ngSubmit)="login(loginDTO)">
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [(ngModel)]="loginDTO.email" name="email" required>
+        <mat-error *ngIf="!loginDTO.email">Email is required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="loginDTO.password" name="password" required>
+        <mat-error *ngIf="!loginDTO.password">Password is required</mat-error>
+      </mat-form-field>
+
+      <button color="primary" type="submit">Login</button>
+    </form>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+  </div>
+  <p>login works!</p>
+  <button (click)="checkAuth()">Check Authentication</button>
+  <p>{{ authenticated }}</p>
+</mat-dialog-content>

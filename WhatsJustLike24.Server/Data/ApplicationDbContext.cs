@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using WhatsJustLike24.Server.Data.DTOs;
 using WhatsJustLike24.Server.Data.Models;
+using WhatsJustLike24.Server.Data.Identity;
 
 namespace WhatsJustLike24.Server.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public ApplicationDbContext() : base()
         { }
@@ -51,6 +52,8 @@ namespace WhatsJustLike24.Server.Data
         public DbSet<MovieDetails> MovieDetails { get; set; }
         public DbSet<MovieIsLike> MovieIsLike { get; set; }
         public DbSet<IsLikeDetails> IsLikeDetails { get; set; }
+
+        public DbSet<AppUser> AppUsers { get; set; }
 
     }
 }
