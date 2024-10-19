@@ -24,6 +24,10 @@ export class AuthService {
     );
   }
 
+  signup(formData: any) {
+    return this.http.post(this.API_URL+'/auth/signup', formData)
+  }
+
   getAuthCheck(): Observable<string> {
     return this.http.get<string>(
       this.API_URL + `/WeatherForecast/testAuth`,

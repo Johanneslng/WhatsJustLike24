@@ -42,11 +42,11 @@ namespace WhatsJustLike24.Server.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { message = "User registered successfully", result });
+                return Ok(new { succeeded = true, message = "User registered successfully", result });
             }
 
             var errors = result.Errors.Select(e => e.Description);
-            return BadRequest(new { message = "User registration failed", errors });
+            return BadRequest(new { succeeded = false, message = "User registration failed", errors });
         }
 
 

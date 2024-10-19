@@ -1,9 +1,11 @@
 <h2 mat-dialog-title>Sign Up</h2>
-
+<button mat-icon-button class="close-button" (click)="onCancel()">
+  <mat-icon>close</mat-icon>
+</button>
 <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
   <mat-form-field appearance="fill">
     <mat-label>Username</mat-label>
-    <input matInput formControlName="username" required />
+    <input matInput formControlName="fullName" required />
     <mat-error *ngIf="registrationForm.get('username')?.hasError('required')">
       Username is required
     </mat-error>
@@ -29,6 +31,9 @@
     <mat-error *ngIf="registrationForm.get('password')?.hasError('minlength')">
       Password must be at least 10 characters
     </mat-error>
+    <mat-error *ngIf="registrationForm.get('password')?.hasError('pattern')">
+      Password must include uppercase, lowercase, and special characters
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="fill">
@@ -37,13 +42,12 @@
     <mat-error *ngIf="registrationForm.get('confirmPassword')?.hasError('required')">
       Password Confirmation is required
     </mat-error>
-    <mat-error *ngIf="registrationForm.hasError('mismatch')">
-      Passwords do not match
+    <mat-error *ngIf="hasDisplayableError('confirmPassword') && registrationForm.controls.confirmPassword.hasError('passwordMismatch')">
+      Passwords don't match.
     </mat-error>
   </mat-form-field>
 
   <div mat-dialog-actions>
-    <button mat-button (click)="onCancel()">Cancel</button>
-    <button mat-button color="primary" type="submit" >Register</button>
+    <button mat-button color="primary" type="submit" [disabled]="registrationForm.invalid">Register</button>
   </div>
 </form>

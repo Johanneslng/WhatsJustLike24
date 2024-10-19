@@ -9,12 +9,15 @@ import { LogoutComponent } from './components/logout/logout.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AddContentComponent } from './components/add-content/add-content.component';
 import { AddContentDialogComponent } from './components/add-content-dialog/add-content-dialog.component';
+import { provideToastr } from 'ngx-toastr';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { SearchComponent } from './components/search/search.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DisplayMoviesComponent } from './components/display-movies/display-movies.component';
 import { DisplaySimilarityDetailsComponent } from './components/display-similarity-details/display-similarity-details.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ToastrModule } from 'ngx-toastr';
 
 //Angular Material
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -23,6 +26,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon'; 
 
 @NgModule({ declarations: [
     AppComponent,
@@ -42,6 +46,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     FormsModule,
     ScrollingModule,
     BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     //Material
     MatDialogModule,
     MatFormFieldModule,
@@ -49,7 +54,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatIconModule,
 
-  ], providers: [provideHttpClient(withInterceptorsFromDi()), provideAnimationsAsync('noop')]
+  ], providers: [
+    provideHttpClient(withInterceptorsFromDi()),
+    provideAnimationsAsync('noop'),
+    provideToastr({ positionClass: 'toast-top-right', timeOut: 3000 })
+  ]
 })
 export class AppModule { }
