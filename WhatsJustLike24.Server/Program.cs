@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc;
 using WhatsJustLike24.Server.Data.Identity;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,7 +68,22 @@ builder.Services.AddIdentityApiEndpoints<AppUser>(options =>
 })
     .AddEntityFrameworkStores< ApplicationDbContext>();
 
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme =
+        x.DefaultChallengeScheme =
+        x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(y =>
+    {
+        y.SaveToken = false;
+        y.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(
+                    builder.Configuration["JWT:SigningKey"]!))
+        };
+    });
 
 builder.Services.AddAuthorization();
 

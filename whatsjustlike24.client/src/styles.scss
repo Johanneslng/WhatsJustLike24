@@ -201,3 +201,63 @@ body {
       transform: rotate(360deg);
     }
   }
+
+
+.link-button {
+  background: none;
+  border: none;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: grey;
+  font-size: 24px; /* Adjust the size of the "X" */
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-button:hover {
+  color: black; /* Optional: Change color on hover */
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem; /* Add space between form fields */
+  width: 80%; /* Make the form fill the dialog */
+  margin: auto;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem; /* Add space between form fields */
+  width: 80%; /* Make the form fill the dialog */
+  margin: auto;
+}
+
+.register-form form {
+  display: flex;
+  flex-direction: column; /* Ensure vertical alignment of fields */
+  gap: 16px; /* Space between the fields */
+}
+
+.mat-form-field {
+  width: 100%; /* Ensure each form field takes up the full width */
+}
+
+.mat-dialog-actions {
+  justify-content: flex-end; /* Align the action button to the right */
+  margin-top: 1.6rem; /* Add some space between form fields and the button */
+}

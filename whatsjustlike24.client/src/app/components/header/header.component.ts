@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginComponent } from '../login/login.component';
 import { RegisterComponent } from '../register/register.component';
+import { AuthService } from '../../services/apiCalls/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -10,18 +11,28 @@ import { RegisterComponent } from '../register/register.component';
 })
 export class HeaderComponent {
   constructor(
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private authService: AuthService
+
   ) { }
 
   openLogin() {
     this.dialog.open(LoginComponent, {
-      width: '50%'
+      width: '30%'
     });
   }
 
   openRegister() {
     this.dialog.open(RegisterComponent, {
-      width: '50%'
+      width: '30%'
     });
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+  }
+
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
   }
 }

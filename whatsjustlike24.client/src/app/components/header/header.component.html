@@ -41,9 +41,8 @@
     </div>
 
     <div class="auth-buttons">
-      <button  class=" btn btn-auth" (click)="openLogin()">login</button>
-
-      <a href="#" class=" btn btn-auth">logout</a>
+      <button *ngIf="!isLoggedIn()" class=" btn btn-auth" (click)="openLogin()">login</button>
+      <button *ngIf="isLoggedIn()" class=" btn btn-auth" (click)="logout()">logout</button>
       <button class=" btn btn-auth" (click)="openRegister()">register</button>
     </div>
   </div>

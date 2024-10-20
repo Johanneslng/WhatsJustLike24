@@ -13,19 +13,12 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
 
-  login(loginData: Login): Observable<any> {
-    const body = {
-      email: loginData.email,
-      password: loginData.password
-    };
-    return this.http.post<any>(
-      this.API_URL + `/login?useCookies=true`,
-      body
-    );
+  signIn(formData:any) {
+    return this.http.post( this.API_URL + `/auth/signin`, formData);
   }
 
-  signup(formData: any) {
-    return this.http.post(this.API_URL+'/auth/signup', formData)
+  signUp(formData: any) {
+    return this.http.post( this.API_URL + '/auth/signup', formData)
   }
 
   getAuthCheck(): Observable<string> {
@@ -35,4 +28,7 @@ export class AuthService {
     );
   }
 
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
 }

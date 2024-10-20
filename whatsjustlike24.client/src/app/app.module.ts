@@ -1,4 +1,5 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -18,6 +19,7 @@ import { DisplayMoviesComponent } from './components/display-movies/display-movi
 import { DisplaySimilarityDetailsComponent } from './components/display-similarity-details/display-similarity-details.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ToastrModule } from 'ngx-toastr';
+import { FirstKeyPipe } from './pipes/first-key.pipe'
 
 //Angular Material
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -27,6 +29,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon'; 
+import { first } from 'rxjs';
 
 @NgModule({ declarations: [
     AppComponent,
@@ -38,9 +41,11 @@ import { MatIconModule } from '@angular/material/icon';
     AddContentDialogComponent,
     SearchComponent,
     DisplayMoviesComponent,
-    DisplaySimilarityDetailsComponent
+    DisplaySimilarityDetailsComponent,
+    FirstKeyPipe,
     ],
   bootstrap: [AppComponent], imports: [
+    CommonModule,
     BrowserModule,
     ReactiveFormsModule,
     FormsModule,
@@ -59,7 +64,8 @@ import { MatIconModule } from '@angular/material/icon';
   ], providers: [
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimationsAsync('noop'),
-    provideToastr({ positionClass: 'toast-top-right', timeOut: 3000 })
+    provideToastr({ positionClass: 'toast-top-right', timeOut: 3000 }),
+    FirstKeyPipe
   ]
 })
 export class AppModule { }

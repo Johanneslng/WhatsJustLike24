@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from '../../services/apiCalls/auth.service';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { FirstKeyPipe } from '../../pipes/first-key.pipe';
+import { LoginComponent } from '../login/login.component';
 
 @Component({
   selector: 'app-register',
@@ -13,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 export class RegisterComponent {
   
   constructor(
+    public dialog: MatDialog,
     private dialogRef: MatDialogRef<RegisterComponent>,
     private fb: FormBuilder,
     private toastr: ToastrService,
@@ -46,7 +49,7 @@ export class RegisterComponent {
   onSubmit() {
     this.isSubmitted = true;
     if (this.registrationForm.valid) {
-      this.authService.signup(this.registrationForm.value)
+      this.authService.signUp(this.registrationForm.value)
         .subscribe({
           next: (res: any) => {
             if (res.succeeded) {
@@ -93,7 +96,13 @@ export class RegisterComponent {
     return Boolean(control?.invalid) &&
       (this.isSubmitted || Boolean(control?.touched) || Boolean(control?.dirty))
   }
+
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  openLogin(): void {
+    this.dialogRef.close();
+    this.dialog.open(LoginComponent);
   }
 }
