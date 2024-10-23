@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -57,7 +58,7 @@ namespace WhatsJustLike24.Server.Controllers
             return BadRequest(new { succeeded = false, message = "User registration failed", errors });
         }
 
-        [HttpPost]
+        [HttpPost, AllowAnonymous]
         [Route("auth/signin")]
         public async Task<IActionResult> Signin([FromBody] UserLoginDTO userLoginDTO)
         {
@@ -104,6 +105,25 @@ namespace WhatsJustLike24.Server.Controllers
             }
 
             return Unauthorized();
+        }
+
+        [HttpGet("UserProfile")]
+        public async Task<IActionResult> GetUserProfile()
+        {
+            string userId = User.Claims.First(x => x.Type == "UserID").Value;
+
+            var userDetails = await _userManager.FindByIdAsync(userId);
+
+            if (userDetails == null)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+
+            return Ok(new
+            {
+                Email = userDetails.Email,
+                FullName = userDetails.FullName
+            });
         }
     }
 }

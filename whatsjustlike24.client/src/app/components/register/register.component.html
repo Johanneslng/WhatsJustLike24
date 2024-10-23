@@ -4,7 +4,7 @@
 </button>
 <div class="register-form">
   <p>Already have an account? <button class="link-button" (click)="openLogin()">Sign in</button></p>
-  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" (keyup.enter)="onSubmit()">
     <mat-form-field appearance="fill">
       <mat-label>Username</mat-label>
       <input matInput formControlName="fullName" required />

@@ -16,6 +16,8 @@ export class HeaderComponent {
 
   ) { }
 
+  public auth: string = ''; 
+
   openLogin() {
     this.dialog.open(LoginComponent, {
       width: '30%'
@@ -29,10 +31,22 @@ export class HeaderComponent {
   }
 
   logout() {
-    localStorage.removeItem('token');
+    this.authService.logout();
   }
 
   isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
+  }
+
+  checkAuth() {
+    this.authService.getAuthCheck().subscribe({
+      next: (response: string) => {
+        this.auth = response;
+        console.log('Auth string:', this.auth);  // Use the authString here
+      },
+      error: (error) => {
+        console.error('Error occurred:', error);
+      },
+    });
   }
 }

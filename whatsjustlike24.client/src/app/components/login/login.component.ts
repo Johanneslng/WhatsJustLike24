@@ -36,7 +36,7 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.authService.signIn(this.loginForm.value).subscribe({
         next: (res: any) => {
-          localStorage.setItem('token', res.token);
+          this.authService.setToken(res.token);
           this.toastr.success('Success!', 'Logged in');
           this.dialogRef.close(this.loginForm.value);
         },
