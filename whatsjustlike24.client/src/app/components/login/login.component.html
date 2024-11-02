@@ -1,1 +1,29 @@
-<p>login works!</p>
+<h2 mat-dialog-title>Sign Up</h2>
+<button mat-icon-button class="close-button" (click)="onCancel()">
+  <mat-icon>close</mat-icon>
+</button>
+<div class="login-form">
+  <p>Don't have an account yet? <button class="link-button" (click)="openRegister()">Sign up</button></p>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required type="email" />
+      <mat-error *ngIf="hasDisplayableError('email') && loginForm.controls.email.hasError('required')">
+        Please enter your email address
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput formControlName="password" required type="password" />
+      <mat-error *ngIf="hasDisplayableError('password') && loginForm.controls.password.hasError('required')">
+        Please enter your password
+      </mat-error>
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+      <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">Sign In</button>
+    </div>
+  </form>
+</div>

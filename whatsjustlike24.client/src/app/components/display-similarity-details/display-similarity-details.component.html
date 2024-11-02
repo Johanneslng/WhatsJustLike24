@@ -1,0 +1,14 @@
+<table>
+  <thead>
+    <tr>
+      <th>Desciption</th>
+      <th>Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of descriptions; let i = index">
+      <td>{{ item }}</td>
+      <td>{{ similarityScores[i] }}</td>
+    </tr>
+  </tbody>
+</table>

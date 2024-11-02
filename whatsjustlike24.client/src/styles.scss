@@ -1,3 +1,42 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+@import 'ngx-toastr/toastr';
+
+
+// Define the theme object.
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+:root {
+  @include mat.all-component-themes($theme);
+}
+
+// Comment out the line below if you want to use the pre-defined typography utility classes.
+// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
+// @include mat.typography-hierarchy($whatsjustlike24.client-theme);
+
+// Comment out the line below if you want to use the deprecated `color` inputs.
+// @include mat.color-variants-backwards-compatibility($whatsjustlike24.client-theme);
 /* You can add global styles to this file, and also import other style files */
 /*
 COLORS:
@@ -9,49 +48,62 @@ COLORS:
     dark pastel green: #0CCA4A
 */
 
+$primary-color: #636DF8;
+$secondary-color: #FFC05C;
+  $secondary-lighter1: #ffe1b0;
+$tertiary-color: black; //Placeholder
+
+$warn-color: #DB222A;
+$success-color: #80FF72;
+$text-grey: #2b2b2b;
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+    font-size: 10px;
+}
+
 body {
   font-family: "Lexend", sans-serif;
   font-weight: 400;
-  font-size: 16px;
+  //font-size: 16px;
   line-height: 1.7;
-  color: #2b2b2b
+  color: $text-grey;
 }
 
 .btn {
-  padding: 0.5vh 1.5vh;
-  font-size: 2.5vh; 
+  padding: 1rem 2rem;
+  font-size: 2rem; 
   color: black;
-  background-color: #CDC1FF;
+  background-color: $secondary-color;
   border: none;
-  border-radius: 3px; 
+  border-radius: 0.5rem; 
   cursor: pointer;
   transition: background-color 0.3s ease;
   text-decoration:none;
 }
 
 .btn:hover {
-  background-color: #ffffff;
-  box-shadow: 1px 3px 5px 3px rgba(0,0,0,0.2);
-  transform: translateY(-3px);
+  background-color: $secondary-lighter1;
+  box-shadow: .1rem .3rem .3rem rgba(0,0,0,0.2);
+  transform: translateY(-.3rem);
 }
 .btn:active {
-  background-color: #8a6dff;
+  background-color: $secondary-lighter1;
 }
 
 .btn:focus {
   outline: none; 
-  box-shadow: 0 0 0 3px #ffffff; 
+  box-shadow: 0 0 0 0.3rem #ffffff; 
 }
 
 .header {
-  height: 10vh;
-  background-color: #7260E6;
+  height: 7rem;
+  background-color: $primary-color;
   position: relative;
   //align-items: center;
 }
@@ -64,21 +116,24 @@ body {
 .logo-and-title {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  //align-items: center;
+  vertical-align: middle;
 }
 
 .logo-and-title > div {
-    margin-right: 3vh;
-    margin-top: -3px;
+    margin-right: 2rem;
+    //margin-top: 1rem;
 }
 
 .logo-box {
-  top: 0px;
-  left: 0px;
+  top: 0rem;
+  left: 0rem;
 }
 
 .logo-svg {
-  height: 10vh;
+  height: 5rem;
+  margin-top: 1rem;
+  margin-left: 0.5rem;
 }
 
 
@@ -86,8 +141,9 @@ body {
     display: flex;
     color: #ffffff;
     font-weight: 800;
-    font-size: 3vh;
-    gap: 2vh;
+    font-size: 2rem;
+    gap: 1rem;
+    margin-top: 0.3rem;
 }
 
 .header-just {
@@ -106,10 +162,16 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 10vh;
-    width: 20vw;
+    height: 0.5rem;
+    gap: 1rem;
+
 }
 
+.btn-auth {
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  margin-top: 7.2rem;
+}
 
 
   @keyframes moveInJust {
@@ -141,3 +203,61 @@ body {
   }
 
 
+.link-button {
+  background: none;
+  border: none;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: grey;
+  font-size: 24px; /* Adjust the size of the "X" */
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-button:hover {
+  color: black; /* Optional: Change color on hover */
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem; /* Add space between form fields */
+  width: 80%; /* Make the form fill the dialog */
+  margin: auto;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem; /* Add space between form fields */
+  width: 80%; /* Make the form fill the dialog */
+  margin: auto;
+}
+
+.register-form form {
+  display: flex;
+  flex-direction: column; /* Ensure vertical alignment of fields */
+  gap: 16px; /* Space between the fields */
+}
+
+.mat-form-field {
+  width: 100%; /* Ensure each form field takes up the full width */
+}
+
+.mat-dialog-actions {
+  justify-content: flex-end; /* Align the action button to the right */
+  margin-top: 1.6rem; /* Add some space between form fields and the button */
+}

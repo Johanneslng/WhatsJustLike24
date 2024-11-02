@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>Sign Up</h2>
+<button mat-icon-button class="close-button" (click)="onCancel()">
+  <mat-icon>close</mat-icon>
+</button>
+<div class="register-form">
+  <p>Already have an account? <button class="link-button" (click)="openLogin()">Sign in</button></p>
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" (keyup.enter)="onSubmit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="fullName" required />
+      <mat-error *ngIf="registrationForm.get('username')?.hasError('required')">
+        Username is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required type="email" />
+      <mat-error *ngIf="registrationForm.get('email')?.hasError('required')">
+        Email is required
+      </mat-error>
+      <mat-error *ngIf="registrationForm.get('email')?.hasError('email')">
+        Enter a valid email
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput formControlName="password" required type="password" />
+
+      <!-- Error handling for password field -->
+      <mat-error *ngIf="hasDisplayableError('password')">
+        <ng-container [ngSwitch]="registrationForm.controls.password.errors | firstKey">
+          <span *ngSwitchCase="'required'">Password is required</span>
+          <span *ngSwitchCase="'minlength'">Password must be at least 10 characters</span>
+          <span *ngSwitchCase="'pattern'">Password must include uppercase, lowercase, and special characters</span>
+        </ng-container>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Confirm Password</mat-label>
+      <input matInput formControlName="confirmPassword" required type="password" />
+      <mat-error *ngIf="registrationForm.get('confirmPassword')?.hasError('required')">
+        Password Confirmation is required
+      </mat-error>
+      <mat-error *ngIf="hasDisplayableError('confirmPassword') && registrationForm.controls.confirmPassword.hasError('passwordMismatch')">
+        Passwords don't match.
+      </mat-error>
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+      <button mat-button color="primary" type="submit" [disabled]="registrationForm.invalid">Register</button>
+    </div>
+  </form>
+</div>

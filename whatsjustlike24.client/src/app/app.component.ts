@@ -1,12 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
+import { UserService } from './services/apiCalls/user.service';
 
 @Component({
   selector: 'app-root',
@@ -14,24 +8,23 @@ interface WeatherForecast {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private userService: UserService
+  ) { }
+
+  fullName: string = '';
 
   ngOnInit() {
-    this.getForecasts();
+    this.userService.getUserProfile().subscribe({
+      next: (res: any) => { this.fullName = res.fullName },
+      error: (err: any) => console.log('error while retrieving user profile:\n', err)
+    })
   }
 
-  getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe(
-      (result) => {
-        this.forecasts = result;
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }
 
-  title = 'whatsjustlike24.client';
+  title = 'Whats Just Like';
+
+
 }
