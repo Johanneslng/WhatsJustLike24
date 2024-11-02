@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using WhatsJustLike24.Server.Data.Identity;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Azure.Storage.Blobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddScoped<MovieApiService>();
 builder.Services.AddScoped<MovieDTOMapper>();
+builder.Services.AddSingleton<ImageBlobService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

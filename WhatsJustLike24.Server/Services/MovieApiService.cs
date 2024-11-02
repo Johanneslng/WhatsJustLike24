@@ -10,9 +10,17 @@ namespace WhatsJustLike24.Server.Services
     {
         private readonly RestClient _client;
         private readonly ApplicationDbContext _context;
-        public MovieApiService(ApplicationDbContext context)
+        private readonly IConfiguration _configuration;
+        private readonly ImageBlobService _imageBlobService;
+        public MovieApiService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            ImageBlobService imageBlobService
+            )
         {
             _context = context;
+            _configuration = configuration;
+            _imageBlobService = imageBlobService;
 
             var options = new RestClientOptions("https://api.themoviedb.org/3/search/movie");
             {
@@ -20,13 +28,12 @@ namespace WhatsJustLike24.Server.Services
             };
             _client = new RestClient(options);
         }
-        string token = Environment.GetEnvironmentVariable("MOVIEDB_API_TOKEN");
 
         public async Task<MovieDBMovieDTO> GetMovieAsync(string query)
         {
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
-            request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZWIxMDJlYmQxNDgyMWI2MWIyNmU0OWVlMjQwOWU0ZiIsInN1YiI6IjY1MmZkOGY1Y2FlZjJkMDBlMjhkYTJjYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4JAoRDa00krt-Pm7Wz5p4gnj7uzscJ2c_UB0Mne11oc");
+            request.AddHeader("Authorization", _configuration["APIKeys:MovieDB"]);
             request.AddQueryParameter("query", query);
             request.AddQueryParameter("include_adult", "false");
             request.AddQueryParameter("language", "en-US");
@@ -36,12 +43,16 @@ namespace WhatsJustLike24.Server.Services
             var jsonDocument = JsonDocument.Parse(response.Content);
             var firstResult = jsonDocument.RootElement.GetProperty("results")[0];
 
+            var imagePath = "https://image.tmdb.org/t/p/w500" + firstResult.GetProperty("poster_path").GetString();
+            //Upload Image to Blob Storage
+            var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath);
+
             return new MovieDBMovieDTO
             {
                 OriginalLanguage = firstResult.GetProperty("original_language").GetString(),
                 OriginalTitle = firstResult.GetProperty("title").GetString(),
                 Summary = firstResult.GetProperty("overview").GetString(),
-                PosterPath = firstResult.GetProperty("poster_path").GetString()
+                PosterPath = blobName
             };
         }
 
@@ -52,7 +63,7 @@ namespace WhatsJustLike24.Server.Services
                 throw new ArgumentException("Movie query cannot be empty.");
             }
 
-            var movieData = await GetMovieAsync(movieQuery); // Assuming GetMovieAsync is another method in this service
+            var movieData = await GetMovieAsync(movieQuery);
 
             if (movieData == null)
             {

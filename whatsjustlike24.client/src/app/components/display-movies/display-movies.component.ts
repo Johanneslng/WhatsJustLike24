@@ -26,7 +26,7 @@ export class DisplayMoviesComponent implements OnInit, OnDestroy {
   similarMovies: SimilarMovie[] = [];
 
   similarTitle: string = '';
-  imageUrl: string = 'https://image.tmdb.org/t/p/w500/';
+  imageUrl: string = 'https://wjlimg.blob.core.windows.net/img/';
   currentSearchValue: string = '';
   isLoading: boolean = false;
   hasSearched: boolean = false;

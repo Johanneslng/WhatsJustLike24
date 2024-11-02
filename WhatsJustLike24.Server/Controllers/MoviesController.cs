@@ -43,7 +43,7 @@ namespace WhatsJustLike24.Server.Controllers
         }
 
         // READ: GET /Movies
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var movies = await _context.Movies.ToListAsync();
@@ -51,7 +51,7 @@ namespace WhatsJustLike24.Server.Controllers
         }
 
         // READ: GET /Movies/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
@@ -65,7 +65,7 @@ namespace WhatsJustLike24.Server.Controllers
         }
 
         // READ: GET /Movies/title?name=Inception
-        [HttpGet("title")]
+        [HttpGet("title"), AllowAnonymous]
         public async Task<IActionResult> GetByTitle([FromQuery] string name)
         {
             var movie = await _context.Movies
@@ -128,7 +128,7 @@ namespace WhatsJustLike24.Server.Controllers
             return NoContent();
         }
 
-        [HttpGet("DetailsByTitle")]
+        [HttpGet("DetailsByTitle"), AllowAnonymous]
         public async Task<ActionResult<MovieDetailsAndTitleDTO>> GetMovieDetailsByTitle(string title)
         {
             var result = from movie in _context.Movies
@@ -156,7 +156,7 @@ namespace WhatsJustLike24.Server.Controllers
 
 
         //[Authorize]
-        [HttpGet("SimilarByTitle")]
+        [HttpGet("SimilarByTitle"), AllowAnonymous]
         public async Task<ActionResult<List<SimilarityByTitleDTO>>> GetSimilarMoviesByTitle(string title)
         {
             var similarMovies = await _context.Set<SimilarityByTitleDTO>()
@@ -189,7 +189,7 @@ namespace WhatsJustLike24.Server.Controllers
             }).ToList();
         }
 
-        [HttpGet("SimilarTitles")]
+        [HttpGet("SimilarTitles"), AllowAnonymous]
         public async Task<ActionResult<string>> GetTheMostSimilarTitlesByDistance(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -242,11 +242,11 @@ namespace WhatsJustLike24.Server.Controllers
         public async Task<IActionResult> AddMovieSimilarity([FromBody] MovieSimilarityRequest request)
         {
             Movie movieA = await _context.Movies
-                                             .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieA.ToLower())
-                                  ?? await _movieApiService.CreateMovieAsync(request.TitleMovieA);
+                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieA.ToLower())
+                ?? await _movieApiService.CreateMovieAsync(request.TitleMovieA);
             Movie movieB = await _context.Movies
-                                         .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieB.ToLower())
-                              ?? await _movieApiService.CreateMovieAsync(request.TitleMovieB);
+                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieB.ToLower())
+                ?? await _movieApiService.CreateMovieAsync(request.TitleMovieB);
 
             bool isNewMovieA = movieA.Id == 0;
             bool isNewMovieB = movieB.Id == 0;
