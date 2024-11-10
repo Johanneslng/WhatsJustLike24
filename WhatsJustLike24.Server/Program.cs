@@ -13,6 +13,7 @@ using WhatsJustLike24.Server.Data.Identity;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Azure.Storage.Blobs;
+using RestSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,11 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddScoped<MovieApiService>();
 builder.Services.AddScoped<MovieDTOMapper>();
+
+builder.Services.AddScoped<GameApiService>();
+builder.Services.AddScoped<GameLookupService>();
+builder.Services.AddSingleton(s => new RestClient("https://api.example.com"));
+builder.Services.AddSingleton<TokenService>();
 builder.Services.AddSingleton<ImageBlobService>();
 
 builder.Services.AddControllers();

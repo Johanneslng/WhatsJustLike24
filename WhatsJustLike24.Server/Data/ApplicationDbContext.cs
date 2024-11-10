@@ -44,14 +44,50 @@ namespace WhatsJustLike24.Server.Data
                 .WithOne(ild => ild.MovieIsLike)
                 .HasForeignKey(ild => ild.MovieIsLikeId);
 
+
+            // Configure the relationships for Games
+
+            // Many-to-Many relationship for Games
+            modelBuilder.Entity<GameIsLike>()
+                .HasOne<Game>(gil => gil.GameA)
+                .WithMany(g => g.IsLikeConnections)
+                .HasForeignKey(gil => gil.GameIdA)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            modelBuilder.Entity<GameIsLike>()
+                .HasOne<Game>(gil => gil.GameB)
+                .WithMany() // No need to define this side if you don't have a navigation property back
+                .HasForeignKey(gil => gil.GameIdB)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            // One-to-One relationship between Game and GameDetails
+            modelBuilder.Entity<Game>()
+                .HasOne(g => g.GameDetails)
+                .WithOne(gd => gd.Game)
+                .HasForeignKey<GameDetails>(gd => gd.GameId);
+
+            // One-to-Many relationship between GameIsLike and GameIsLikeDetails
+            modelBuilder.Entity<GameIsLike>()
+                .HasMany(gil => gil.GameIsLikeDetails)
+                .WithOne(gild => gild.GameIsLike)
+                .HasForeignKey(gild => gild.GameIsLikeId);
+
+
             modelBuilder.Entity<SimilarityByTitleDTO>().HasNoKey().ToView(null);
         }
 
 
+        // DbSet properties for Movies
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieDetails> MovieDetails { get; set; }
         public DbSet<MovieIsLike> MovieIsLike { get; set; }
         public DbSet<IsLikeDetails> IsLikeDetails { get; set; }
+
+        // DbSet properties for Games
+        public DbSet<Game> Games { get; set; }
+        public DbSet<GameDetails> GameDetails { get; set; }
+        public DbSet<GameIsLike> GameIsLike { get; set; }
+        public DbSet<GameIsLikeDetails> GameIsLikeDetails { get; set; }
 
         public DbSet<AppUser> AppUsers { get; set; }
 
