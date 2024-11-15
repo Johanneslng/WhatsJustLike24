@@ -7,7 +7,6 @@
         public string? Cover { get; set; }
         public string? Developer { get; set; }
         public DateTime? FirstRelease { get; set; }
-        public string? Franchise { get; set; }
         public string? Platforms { get; set; }
         public string? Genre { get; set; }
     }

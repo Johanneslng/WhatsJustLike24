@@ -34,7 +34,7 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddScoped<MovieApiService>();
 builder.Services.AddScoped<MovieDTOMapper>();
-
+builder.Services.AddScoped<GameDTOMapper>();
 builder.Services.AddScoped<GameApiService>();
 builder.Services.AddScoped<GameLookupService>();
 builder.Services.AddSingleton(s => new RestClient("https://api.example.com"));

@@ -7,6 +7,7 @@ using WhatsJustLike24.Server.Data.Mappers;
 using WhatsJustLike24.Server.Data.Models;
 using WhatsJustLike24.Server.Data;
 using WhatsJustLike24.Server.Services;
+using WhatsJustLike24.Server.Data.Requests;
 
 namespace WhatsJustLike24.Server.Controllers
 {
@@ -239,14 +240,14 @@ namespace WhatsJustLike24.Server.Controllers
         // POST: /Movies/AddSimilarity
         [Authorize]
         [HttpPost("AddSimilarity")]
-        public async Task<IActionResult> AddMovieSimilarity([FromBody] MovieSimilarityRequest request)
+        public async Task<IActionResult> AddMovieSimilarity([FromBody] SimilarityRequest request)
         {
             Movie movieA = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieA.ToLower())
-                ?? await _movieApiService.CreateMovieAsync(request.TitleMovieA);
+                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleA.ToLower())
+                ?? await _movieApiService.CreateMovieAsync(request.TitleA);
             Movie movieB = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieB.ToLower())
-                ?? await _movieApiService.CreateMovieAsync(request.TitleMovieB);
+                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleB.ToLower())
+                ?? await _movieApiService.CreateMovieAsync(request.TitleB);
 
             bool isNewMovieA = movieA.Id == 0;
             bool isNewMovieB = movieB.Id == 0;
@@ -321,12 +322,5 @@ namespace WhatsJustLike24.Server.Controllers
             return _context.Movies.Any(e => e.Id == id);
         }
 
-        public class MovieSimilarityRequest
-        {
-            public string TitleMovieA { get; set; }
-            public string TitleMovieB { get; set; }
-            public int SimilarityScore { get; set; }
-            public string Description { get; set; }  // Optional, based on whether you'd like a description.
-        }
     }
 }

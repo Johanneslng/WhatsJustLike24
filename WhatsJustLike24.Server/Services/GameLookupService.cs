@@ -30,69 +30,58 @@ public class GameLookupService
 
     private string baseUrl = "https://api.igdb.com/v4/";
 
-    public Task<string> GetCoverUrlAsync(int coverId) => GetOrAddAsync(_coverCache, coverId, async () => await RetrieveCoverAsync(coverId, await _tokenService.GetTwitchTokenAsync(), _clientId));
+    public Task<string> GetCoverUrlAsync(int coverId) => GetOrAddAsync(_coverCache, coverId, async () => await RetrieveListValuesAsync(coverId, "url", "covers"));
 
-    public Task<string> GetGenreNameAsync(int genreId) => GetOrAddAsync(_genreCache, genreId, async () => await RetrieveGenreAsync(genreId, await _tokenService.GetTwitchTokenAsync(), _clientId));
+    public Task<string> GetGenreNameAsync(int genreId) => GetOrAddAsync(_genreCache, genreId, async () => await RetrieveListValuesAsync(genreId, "name", "genres"));
 
-    //public Task<string> GetPlatformNameAsync(int platformId) => GetOrAddAsync(_platformCache, platformId, async () => await RetrievePlatformAsync(platformId));
+    public Task<string> GetPlatformNameAsync(int platformId) => GetOrAddAsync(_platformCache, platformId, async () => await RetrieveListValuesAsync(platformId, "name", "platforms"));
 
-    //public Task<string> GetCompanyNameAsync(int companyId) => GetOrAddAsync(_companyCache, companyId, async () => await RetrieveCompanyAsync(companyId));
+    public Task<string> GetCompanyNameAsync(int companyId) => GetOrAddAsync(_companyCache, companyId, async () => 
+        await RetrieveListValuesAsync(
+            Convert.ToInt32(await RetrieveListValuesAsync(companyId, "company", "involved_companies")),
+            "name",
+            "companies"
+        )
+    );
 
-    private async Task<string> RetrieveCoverAsync(int coverId, string token, string clientId)
+    private async Task<string> RetrieveListValuesAsync(int listValueId, string requestField, string urlEnding)
     {
-        string coverUrl = "";
-        var request = new RestRequest($"{baseUrl}covers", Method.Post)
-            .AddHeader("Client-ID", clientId)
-            .AddHeader("Authorization", "Bearer " + token)
+        string value = "";
+        var request = new RestRequest($"{baseUrl}{urlEnding}", Method.Post)
+            .AddHeader("Client-ID", _clientId)
+            .AddHeader("Authorization", "Bearer " + await _tokenService.GetTwitchTokenAsync())
             .AddHeader("Accept", "application/json")
-            .AddStringBody($"fields url; where id = {coverId};", ContentType.Plain);
+            .AddStringBody($"fields {requestField}; where id = {listValueId};", ContentType.Plain);
 
-        var response = await _client.PostAsync(request);
-        if(response.IsSuccessful)
+        var response = await _client.ExecuteAsync(request);
+        if (response.IsSuccessful)
         {
             var jsonResponse = JsonDocument.Parse(response.Content);
             if (jsonResponse.RootElement.ValueKind == JsonValueKind.Array)
             {
                 foreach (JsonElement element in jsonResponse.RootElement.EnumerateArray())
                 {
-                    // Access "url" property within each object
-                    if (element.TryGetProperty("url", out JsonElement urlElement))
+                    if (element.TryGetProperty(requestField, out JsonElement valueElement))
                     {
-                        coverUrl = urlElement.GetString();
-                        Console.WriteLine($"URL: {coverUrl}");
+
+                        if (valueElement.ValueKind == JsonValueKind.String)
+                        {
+                            value = valueElement.GetString();
+                        }
+                        else if (valueElement.ValueKind == JsonValueKind.Number)
+                        {
+                            value = valueElement.GetInt32().ToString();
+                        }
                     }
                 }
             }
-            return coverUrl;
+            return value;
         }
         else
         {
-            throw new Exception($"Failed to get Cover from API: {response.ErrorMessage}");
+            throw new Exception($"Failed to get Value from API: {response.ErrorMessage}");
         }
     }
-
-    private async Task<string> RetrieveGenreAsync(int coverId, string token, string clientId)
-    {
-        var request = new RestRequest($"{baseUrl}/covers", Method.Post)
-            .AddHeader("Client-ID", clientId)
-            .AddHeader("Authorization", "Bearer " + token)
-            .AddHeader("Accept", "application/json")
-            .AddStringBody($"fields url; where id = {coverId}", ContentType.Plain);
-
-        var response = await _client.ExecuteAsync(request);
-        if (response.IsSuccessful)
-        {
-            var jsonResponse = JsonDocument.Parse(response.Content);
-            var coverUrl = jsonResponse.RootElement.GetProperty("url").GetString();
-
-            return coverUrl;
-        }
-        else
-        {
-            throw new Exception($"Failed to get Cover from API: {response.ErrorMessage}");
-        }
-    }
-
     private Task<string> GetOrAddAsync(ConcurrentDictionary<int, Task<string>> cache, int key, Func<Task<string>> valueFactory)
     {
         return cache.GetOrAdd(key, _ => valueFactory());

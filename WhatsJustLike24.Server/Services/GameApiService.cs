@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using RestSharp;
 using WhatsJustLike24.Server.Data;
 using WhatsJustLike24.Server.Data.DTOs;
@@ -65,26 +66,23 @@ namespace WhatsJustLike24.Server.Services
                     minLevenshtein = levenshteinDistance;
                 }
             }
+
             var gameDBDTO = new GameDBDTO
             {
                 Title = gameApiResponse.Name,
-                Cover = await _gameLookupService.GetCoverUrlAsync(gameApiResponse.Cover)
-
+                Cover = await _gameLookupService.GetCoverUrlAsync(gameApiResponse.Cover),
+                Description = gameApiResponse.Summary,
+                Genre = await ConcatenateEndpointResultsAsync(gameApiResponse.Genres, _gameLookupService.GetGenreNameAsync),
+                FirstRelease = DateTimeOffset.FromUnixTimeSeconds(gameApiResponse.FirstReleaseDate).Date,
+                Platforms = await ConcatenateEndpointResultsAsync(gameApiResponse.Platforms, _gameLookupService.GetPlatformNameAsync),
+                Developer = await ConcatenateEndpointResultsAsync(gameApiResponse.InvolvedCompanies, _gameLookupService.GetCompanyNameAsync)
             };
             //var imagePath = "https://image.tmdb.org/t/p/w500" + firstResult.GetProperty("poster_path").GetString();
             //Upload Image to Blob Storage
             //var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath);
 
             return gameDBDTO;
-           /* return new GameDBDTO
-            {
-                OriginalLanguage = firstResult.GetProperty("original_language").GetString(),
-                OriginalTitle = firstResult.GetProperty("title").GetString(),
-                Summary = firstResult.GetProperty("overview").GetString(),
-                PosterPath = blobName
-            };*/
         }
-        /*
         public async Task<Game> CreateGameAsync(string gameQuery)
         {
             if (string.IsNullOrEmpty(gameQuery))
@@ -113,7 +111,6 @@ namespace WhatsJustLike24.Server.Services
                     Cover = gameData.Cover,
                     Developer = gameData.Developer,
                     FirstRelease = gameData.FirstRelease,
-                    Franchise = gameData.Franchise,
                     Platforms = gameData.Platforms,
                     Genre = gameData.Genre
                 }
@@ -123,6 +120,30 @@ namespace WhatsJustLike24.Server.Services
             await _context.SaveChangesAsync();
 
             return game;
-        }*/
+        }
+
+
+        //helper methods
+        public async Task<string> ConcatenateEndpointResultsAsync(IEnumerable<int> ids, Func<int, Task<string>> fetchFunction)
+        {
+            var stringBuilder = new StringBuilder();
+
+            foreach (var id in ids)
+            {
+                string result = await fetchFunction(id);
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    if (stringBuilder.Length > 0)
+                    {
+                        stringBuilder.Append(", ");
+                    }
+
+                    stringBuilder.Append(result);
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
     }
 }
