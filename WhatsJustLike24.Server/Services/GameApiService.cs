@@ -67,19 +67,24 @@ namespace WhatsJustLike24.Server.Services
                 }
             }
 
+            var Cover = await _gameLookupService.GetCoverUrlAsync(gameApiResponse.Cover);
+            string CoverEnding = Cover.Substring(Cover.LastIndexOf('/') + 1);
+            var imagePath = "https://images.igdb.com/igdb/image/upload/t_720p/" + CoverEnding;
+            //Upload Image to Blob Storage
+            var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "games");
+
             var gameDBDTO = new GameDBDTO
             {
                 Title = gameApiResponse.Name,
-                Cover = await _gameLookupService.GetCoverUrlAsync(gameApiResponse.Cover),
+                Cover = blobName,
                 Description = gameApiResponse.Summary,
                 Genre = await ConcatenateEndpointResultsAsync(gameApiResponse.Genres, _gameLookupService.GetGenreNameAsync),
                 FirstRelease = DateTimeOffset.FromUnixTimeSeconds(gameApiResponse.FirstReleaseDate).Date,
                 Platforms = await ConcatenateEndpointResultsAsync(gameApiResponse.Platforms, _gameLookupService.GetPlatformNameAsync),
                 Developer = await ConcatenateEndpointResultsAsync(gameApiResponse.InvolvedCompanies, _gameLookupService.GetCompanyNameAsync)
             };
-            //var imagePath = "https://image.tmdb.org/t/p/w500" + firstResult.GetProperty("poster_path").GetString();
-            //Upload Image to Blob Storage
-            //var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath);
+
+            
 
             return gameDBDTO;
         }

@@ -73,9 +73,30 @@ namespace WhatsJustLike24.Server.Data
                 .HasForeignKey(gild => gild.GameIsLikeId);
 
 
-            modelBuilder.Entity<SimilarityByTitleDTO>().HasNoKey().ToView(null);
+            //modelBuilder.Entity<SimilarityByTitleDTO>().HasNoKey().ToView(null);
+
+            modelBuilder.Entity<SimilarityByTitleDTO>().HasNoKey();
+
+            modelBuilder.HasDbFunction(() => GetMovieSimilarityDetails(default!))
+            .HasName("GetMovieSimilarityDetails")
+            .HasSchema("dbo");
+
+            modelBuilder.HasDbFunction(() => GetGameSimilarityDetails(default!))
+            .HasName("GetMovieSimilarityDetails")
+            .HasSchema("dbo");
+
+
         }
 
+        public IQueryable<SimilarityByTitleDTO> GetMovieSimilarityDetails(string title)
+        {
+            return FromExpression(() => GetMovieSimilarityDetails(title));
+        }
+
+        public IQueryable<SimilarityByTitleDTO> GetGameSimilarityDetails(string title)
+        {
+            return FromExpression(() => GetGameSimilarityDetails(title));
+        }
 
         // DbSet properties for Movies
         public DbSet<Movie> Movies { get; set; }

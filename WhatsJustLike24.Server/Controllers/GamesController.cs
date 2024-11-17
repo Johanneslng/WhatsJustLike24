@@ -78,24 +78,7 @@ namespace WhatsJustLike24.Server.Controllers
         [HttpGet("SimilarByTitle"), AllowAnonymous]
         public async Task<ActionResult<List<SimilarityByTitleDTO>>> GetSimilarGamesByTitle(string title)
         {
-            var similarGames = await _context.Set<SimilarityByTitleDTO>()
-                .FromSqlInterpolated($@"
-                     SELECT 
-	                    m2.Id
-	                    , m2.Title 
-	                    , md2.Cover AS PosterPath
-	                    , AVG(il.SimilarityScore) AS AverageSimilarityScore
-	                    , COUNT(il.SimilarityScore) AS SimilarityScoreCount
-	                    , STRING_AGG(il.description, '; ') WITHIN GROUP (ORDER BY il.description) AS DescriptionList
-	                    , STRING_AGG(il.SimilarityScore, '; ') WITHIN GROUP (ORDER BY il.description) AS SimilarityScoreList
-                     FROM Games m
-                     JOIN GameIsLike mil ON (m.Id = mil.GameIdA OR m.Id = mil.GameIdB) AND m.Title = {title}
-                     JOIN Games m2 ON (m2.Id = mil.GameIdA OR m2.Id = mil.GameIdB) AND m2.Id != m.Id
-                     LEFT JOIN GameDetails md2 ON m2.Id = md2.GameId
-                     LEFT JOIN GameIsLikeDetails il ON mil.Id = il.GameIsLikeId
-                     GROUP BY m2.Id, m2.Title, md2.Cover
-                    ")
-                .ToListAsync();
+            var similarGames = await _context.GetGameSimilarityDetails(title).ToListAsync();
 
             return similarGames.Select(m => new SimilarityByTitleDTO
             {
@@ -125,9 +108,9 @@ namespace WhatsJustLike24.Server.Controllers
                 {
                     await connection.OpenAsync();
                     var command = new SqlCommand(@"
-                SELECT TOP 1 A.Title
-                FROM Games AS A
-                ORDER BY DIFFERENCE(@Title, A.Title) DESC, dbo.LEVENSHTEIN(@Title, A.Title) ASC", connection);
+                        SELECT TOP 1 A.Title
+                        FROM Games AS A
+                        ORDER BY DIFFERENCE(@Title, A.Title) DESC, dbo.LEVENSHTEIN(@Title, A.Title) ASC", connection);
                     command.Parameters.AddWithValue("@Title", title);
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -153,7 +136,7 @@ namespace WhatsJustLike24.Server.Controllers
             }
         }
 
-        // POST: /Movies/AddSimilarity
+        // POST: /Games/AddSimilarity
         [HttpPost("AddSimilarity"), AllowAnonymous]
         public async Task<IActionResult> AddGameSimilarity([FromBody] SimilarityRequest request)
         {

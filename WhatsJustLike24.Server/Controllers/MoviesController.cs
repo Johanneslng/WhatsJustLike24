@@ -160,24 +160,7 @@ namespace WhatsJustLike24.Server.Controllers
         [HttpGet("SimilarByTitle"), AllowAnonymous]
         public async Task<ActionResult<List<SimilarityByTitleDTO>>> GetSimilarMoviesByTitle(string title)
         {
-            var similarMovies = await _context.Set<SimilarityByTitleDTO>()
-                .FromSqlInterpolated($@"
-                     SELECT 
-	                    m2.Id
-	                    , m2.Title
-	                    , md2.PosterPath
-	                    , AVG(il.SimilarityScore) AS AverageSimilarityScore
-	                    , COUNT(il.SimilarityScore) AS SimilarityScoreCount
-	                    , STRING_AGG(il.description, '; ') WITHIN GROUP (ORDER BY il.description) AS DescriptionList
-	                    , STRING_AGG(il.SimilarityScore, '; ') WITHIN GROUP (ORDER BY il.description) AS SimilarityScoreList
-                     FROM Movies m
-                     JOIN MovieIsLike mil ON (m.Id = mil.MovieIdA OR m.Id = mil.MovieIdB) AND m.Title = {title}
-                     JOIN Movies m2 ON (m2.Id = mil.MovieIdA OR m2.Id = mil.MovieIdB) AND m2.Id != m.Id
-                     LEFT JOIN MovieDetails md2 ON m2.Id = md2.MovieId
-                     LEFT JOIN IsLikeDetails il ON mil.Id = il.MovieIsLikeId
-                     GROUP BY m2.Id, m2.Title, md2.PosterPath
-                    ")
-                .ToListAsync();
+            var similarMovies = await _context.GetMovieSimilarityDetails(title).ToListAsync();
 
             return similarMovies.Select(m => new SimilarityByTitleDTO
             {
@@ -207,9 +190,9 @@ namespace WhatsJustLike24.Server.Controllers
                 {
                     await connection.OpenAsync();
                     var command = new SqlCommand(@"
-                SELECT TOP 1 A.Title
-                FROM Movies AS A
-                ORDER BY DIFFERENCE(@Title, A.Title) DESC, dbo.LEVENSHTEIN(@Title, A.Title) ASC", connection);
+                        SELECT TOP 1 A.Title
+                        FROM Movies AS A
+                        ORDER BY DIFFERENCE(@Title, A.Title) DESC, dbo.LEVENSHTEIN(@Title, A.Title) ASC", connection);
                     command.Parameters.AddWithValue("@Title", title);
 
                     using (var reader = await command.ExecuteReaderAsync())
