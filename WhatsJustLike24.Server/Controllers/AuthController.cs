@@ -125,5 +125,11 @@ namespace WhatsJustLike24.Server.Controllers
                 FullName = userDetails.FullName
             });
         }
+
+        [HttpGet("CheckAuth")]
+        public Boolean CheckAuth()
+        {
+            return true;
+        }
     }
 }

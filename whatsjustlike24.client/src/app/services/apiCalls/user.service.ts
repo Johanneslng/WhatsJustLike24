@@ -20,4 +20,9 @@ export class UserService {
     const reqHeader = new HttpHeaders({'Authorization': 'Bearer ' + this.authService.getToken()})
     return this.http.get(this.API_URL + '/UserProfile', {headers: reqHeader})
   }
+
+  isLoggedIn() {
+    const reqHeader = new HttpHeaders({ 'Authorization': 'Bearer ' + this.authService.getToken() })
+    return this.http.get(this.API_URL + '/CheckAuth', { headers: reqHeader })
+  }
 }

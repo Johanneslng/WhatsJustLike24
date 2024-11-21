@@ -44,7 +44,7 @@ namespace WhatsJustLike24.Server.Controllers
         }
 
         // READ: GET /Movies
-        [HttpGet, AllowAnonymous]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var movies = await _context.Movies.ToListAsync();
