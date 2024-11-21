@@ -135,16 +135,23 @@ namespace WhatsJustLike24.Server.Services
 
             foreach (var id in ids)
             {
-                string result = await fetchFunction(id);
-
-                if (!string.IsNullOrEmpty(result))
+                try
                 {
-                    if (stringBuilder.Length > 0)
-                    {
-                        stringBuilder.Append(", ");
-                    }
+                    string result = await fetchFunction(id);
 
-                    stringBuilder.Append(result);
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        if (stringBuilder.Length > 0)
+                        {
+                            stringBuilder.Append(", ");
+                        }
+
+                        stringBuilder.Append(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred while processing ID {id}: {ex.Message}");
                 }
             }
 

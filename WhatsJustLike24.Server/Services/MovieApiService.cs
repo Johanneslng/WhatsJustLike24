@@ -31,30 +31,58 @@ namespace WhatsJustLike24.Server.Services
 
         public async Task<MovieDBMovieDTO> GetMovieAsync(string query)
         {
-            var request = new RestRequest("");
-            request.AddHeader("accept", "application/json");
-            request.AddHeader("Authorization", _configuration["APIKeys:MovieDB"]);
-            request.AddQueryParameter("query", query);
-            request.AddQueryParameter("include_adult", "false");
-            request.AddQueryParameter("language", "en-US");
-            request.AddQueryParameter("page", "1");
-
-            var response = await _client.GetAsync(request);
-            var jsonDocument = JsonDocument.Parse(response.Content);
-            var firstResult = jsonDocument.RootElement.GetProperty("results")[0];
-
-            var imagePath = "https://image.tmdb.org/t/p/w500" + firstResult.GetProperty("poster_path").GetString();
-            //Upload Image to Blob Storage
-            var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "movies");
-
-            return new MovieDBMovieDTO
+            try
             {
-                OriginalLanguage = firstResult.GetProperty("original_language").GetString(),
-                OriginalTitle = firstResult.GetProperty("title").GetString(),
-                Summary = firstResult.GetProperty("overview").GetString(),
-                PosterPath = blobName
-            };
+                var request = new RestRequest("");
+                request.AddHeader("accept", "application/json");
+                request.AddHeader("Authorization", _configuration["APIKeys:MovieDB"]);
+                request.AddQueryParameter("query", query);
+                request.AddQueryParameter("include_adult", "false");
+                request.AddQueryParameter("language", "en-US");
+                request.AddQueryParameter("page", "1");
+
+                // Send the request
+                var response = await _client.GetAsync(request);
+
+                if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content))
+                {
+                    throw new Exception("Failed to retrieve movie data from the API.");
+                }
+
+                var jsonDocument = JsonDocument.Parse(response.Content);
+
+                // Check if results array exists and is not empty
+                var results = jsonDocument.RootElement.GetProperty("results");
+                if (results.GetArrayLength() == 0)
+                {
+                    throw new Exception("No movies found for the given query.");
+                }
+
+                var firstResult = results[0];
+
+                var imagePath = "https://image.tmdb.org/t/p/w500" + firstResult.GetProperty("poster_path").GetString();
+
+                // Upload image to Blob Storage
+                var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "movies");
+
+                return new MovieDBMovieDTO
+                {
+                    OriginalLanguage = firstResult.GetProperty("original_language").GetString(),
+                    OriginalTitle = firstResult.GetProperty("title").GetString(),
+                    Summary = firstResult.GetProperty("overview").GetString(),
+                    PosterPath = blobName
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log the error (replace with your logging mechanism)
+                Console.WriteLine($"Error in GetMovieAsync: {ex.Message}");
+
+                // Optionally rethrow the exception or return a default/fallback value
+                throw new Exception("An error occurred while fetching the movie details.", ex);
+            }
         }
+
 
         public async Task<Movie> CreateMovieAsync(string movieQuery)
         {

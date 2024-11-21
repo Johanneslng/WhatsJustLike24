@@ -221,8 +221,8 @@ namespace WhatsJustLike24.Server.Controllers
 
 
         // POST: /Movies/AddSimilarity
-        [Authorize]
-        [HttpPost("AddSimilarity")]
+        //[Authorize]
+        [HttpPost("AddSimilarity"), AllowAnonymous]
         public async Task<IActionResult> AddMovieSimilarity([FromBody] SimilarityRequest request)
         {
             Movie movieA = await _context.Movies

@@ -12,21 +12,21 @@ import { Subscription } from 'rxjs';
 })
 export class AddContentComponent {
   currentSearchValue: string = '';
-  private searchValueSubscription: Subscription;
+  private searchStateSubscription: Subscription;
 
   constructor(
     public dialog: MatDialog,
     private setSearchValueService: SetSearchValueService
   ) {
-    this.searchValueSubscription = this.setSearchValueService.getSearchValue().subscribe(
-      newSearchValue => {
-        this.currentSearchValue = newSearchValue;
+    this.searchStateSubscription = this.setSearchValueService.getSearchState().subscribe(
+      response => {
+        this.currentSearchValue = response.value;
       }
     );
   }
 
   ngOnDestroy() {
-    this.searchValueSubscription.unsubscribe(); // Prevent memory leaks
+    this.searchStateSubscription.unsubscribe(); // Prevent memory leaks
   }
 
   openDialog() {

@@ -36,7 +36,7 @@ namespace WhatsJustLike24.Server.Controllers
             return Ok(token);
         }
 
-        [HttpGet, AllowAnonymous]
+        [HttpGet("title"), AllowAnonymous]
         public async Task<IActionResult> GetGame([FromQuery] string name)
         {
             var Game = await _gameApiService.GetGameAsync(name);
@@ -72,6 +72,34 @@ namespace WhatsJustLike24.Server.Controllers
             }
 
             return Ok(game);
+        }
+
+        [HttpGet("DetailsByTitle"), AllowAnonymous]
+        public async Task<ActionResult<GameDetailsAndTitleDTO>> GetGameDetailsByTitle(string title)
+        {
+            var result = from game in _context.Games
+                         join detail in _context.GameDetails
+                         on game.Id equals detail.GameId
+                         where game.Title == title
+                         select new
+                         {
+                             game.Title,
+                             detail.Genre,
+                             detail.Developer,
+                             detail.FirstRelease,
+                             detail.Cover,
+                             detail.Platforms,
+                             detail.Description
+                         };
+
+            var gameData = result.FirstOrDefault();
+
+            if (gameData == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(gameData);
         }
 
         //[Authorize]

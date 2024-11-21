@@ -82,7 +82,7 @@ namespace WhatsJustLike24.Server.Data
             .HasSchema("dbo");
 
             modelBuilder.HasDbFunction(() => GetGameSimilarityDetails(default!))
-            .HasName("GetMovieSimilarityDetails")
+            .HasName("GetGameSimilarityDetails")
             .HasSchema("dbo");
 
 
