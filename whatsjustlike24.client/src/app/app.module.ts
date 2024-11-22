@@ -15,7 +15,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { SearchComponent } from './components/search/search.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DisplayMoviesComponent } from './components/display-movies/display-movies.component';
+import { DisplayContentComponent } from './components/display-content/display-content.component';
 import { DisplaySimilarityDetailsComponent } from './components/display-similarity-details/display-similarity-details.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ToastrModule } from 'ngx-toastr';
@@ -40,7 +40,7 @@ import { first } from 'rxjs';
     AddContentComponent,
     AddContentDialogComponent,
     SearchComponent,
-    DisplayMoviesComponent,
+    DisplayContentComponent,
     DisplaySimilarityDetailsComponent,
     FirstKeyPipe,
     ],

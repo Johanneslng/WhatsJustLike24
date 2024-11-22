@@ -1,17 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { ContentType } from '../models/Enums/ContentType';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SetSearchValueService {
-  private searchValue = new Subject<string>();
+  private searchStateSubject = new BehaviorSubject<{ value: string; type: ContentType }>({
+    value: '',
+    type: ContentType.Movies,
+  });
 
-  updateSearchValue(value: string) {
-    this.searchValue.next(value);
+  updateSearchState(value: string, type: ContentType): void {
+    this.searchStateSubject.next({ value, type });
   }
 
-  getSearchValue() {
-    return this.searchValue.asObservable();
+  getSearchState(): Observable<{ value: string; type: ContentType }> {
+    return this.searchStateSubject.asObservable();
   }
 }

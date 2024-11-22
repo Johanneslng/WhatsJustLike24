@@ -3,6 +3,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SetSearchValueService } from 'src/app/services/set-search-value.service';
 import { AddContentDialogComponent } from 'src/app/components/add-content-dialog/add-content-dialog.component';
 import { Subscription } from 'rxjs';
+import { ContentType } from 'src/app/models/Enums/ContentType';
 
 
 @Component({
@@ -12,27 +13,33 @@ import { Subscription } from 'rxjs';
 })
 export class AddContentComponent {
   currentSearchValue: string = '';
-  private searchValueSubscription: Subscription;
+  currentSearchType: ContentType = ContentType.Movies
+  private searchStateSubscription: Subscription;
 
   constructor(
     public dialog: MatDialog,
     private setSearchValueService: SetSearchValueService
   ) {
-    this.searchValueSubscription = this.setSearchValueService.getSearchValue().subscribe(
-      newSearchValue => {
-        this.currentSearchValue = newSearchValue;
+    this.searchStateSubscription = this.setSearchValueService.getSearchState().subscribe(
+      response => {
+        this.currentSearchValue = response.value;
+        this.currentSearchType = response.type;
       }
     );
   }
 
   ngOnDestroy() {
-    this.searchValueSubscription.unsubscribe(); // Prevent memory leaks
+    this.searchStateSubscription.unsubscribe(); // Prevent memory leaks
   }
 
   openDialog() {
     this.dialog.open(AddContentDialogComponent, {
-      data: { currentSearchValue: this.currentSearchValue },
+      data: { currentSearchValue: this.currentSearchValue, selectedType: this.currentSearchType },
       width: '30%'
     });
+  }
+
+  getEnumLabel(type: ContentType): string {
+    return ContentType[type];
   }
 }

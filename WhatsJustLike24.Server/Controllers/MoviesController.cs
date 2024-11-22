@@ -7,6 +7,7 @@ using WhatsJustLike24.Server.Data.Mappers;
 using WhatsJustLike24.Server.Data.Models;
 using WhatsJustLike24.Server.Data;
 using WhatsJustLike24.Server.Services;
+using WhatsJustLike24.Server.Data.Requests;
 
 namespace WhatsJustLike24.Server.Controllers
 {
@@ -43,7 +44,7 @@ namespace WhatsJustLike24.Server.Controllers
         }
 
         // READ: GET /Movies
-        [HttpGet, AllowAnonymous]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var movies = await _context.Movies.ToListAsync();
@@ -159,24 +160,7 @@ namespace WhatsJustLike24.Server.Controllers
         [HttpGet("SimilarByTitle"), AllowAnonymous]
         public async Task<ActionResult<List<SimilarityByTitleDTO>>> GetSimilarMoviesByTitle(string title)
         {
-            var similarMovies = await _context.Set<SimilarityByTitleDTO>()
-                .FromSqlInterpolated($@"
-                     SELECT 
-	                    m2.Id
-	                    , m2.Title
-	                    , md2.PosterPath
-	                    , AVG(il.SimilarityScore) AS AverageSimilarityScore
-	                    , COUNT(il.SimilarityScore) AS SimilarityScoreCount
-	                    , STRING_AGG(il.description, '; ') WITHIN GROUP (ORDER BY il.description) AS DescriptionList
-	                    , STRING_AGG(il.SimilarityScore, '; ') WITHIN GROUP (ORDER BY il.description) AS SimilarityScoreList
-                     FROM Movies m
-                     JOIN MovieIsLike mil ON (m.Id = mil.MovieIdA OR m.Id = mil.MovieIdB) AND m.Title = {title}
-                     JOIN Movies m2 ON (m2.Id = mil.MovieIdA OR m2.Id = mil.MovieIdB) AND m2.Id != m.Id
-                     LEFT JOIN MovieDetails md2 ON m2.Id = md2.MovieId
-                     LEFT JOIN IsLikeDetails il ON mil.Id = il.MovieIsLikeId
-                     GROUP BY m2.Id, m2.Title, md2.PosterPath
-                    ")
-                .ToListAsync();
+            var similarMovies = await _context.GetMovieSimilarityDetails(title).ToListAsync();
 
             return similarMovies.Select(m => new SimilarityByTitleDTO
             {
@@ -206,9 +190,9 @@ namespace WhatsJustLike24.Server.Controllers
                 {
                     await connection.OpenAsync();
                     var command = new SqlCommand(@"
-                SELECT TOP 1 A.Title
-                FROM Movies AS A
-                ORDER BY DIFFERENCE(@Title, A.Title) DESC, dbo.LEVENSHTEIN(@Title, A.Title) ASC", connection);
+                        SELECT TOP 1 A.Title
+                        FROM Movies AS A
+                        ORDER BY DIFFERENCE(@Title, A.Title) DESC, dbo.LEVENSHTEIN(@Title, A.Title) ASC", connection);
                     command.Parameters.AddWithValue("@Title", title);
 
                     using (var reader = await command.ExecuteReaderAsync())
@@ -237,16 +221,16 @@ namespace WhatsJustLike24.Server.Controllers
 
 
         // POST: /Movies/AddSimilarity
-        [Authorize]
-        [HttpPost("AddSimilarity")]
-        public async Task<IActionResult> AddMovieSimilarity([FromBody] MovieSimilarityRequest request)
+        //[Authorize]
+        [HttpPost("AddSimilarity"), AllowAnonymous]
+        public async Task<IActionResult> AddMovieSimilarity([FromBody] SimilarityRequest request)
         {
             Movie movieA = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieA.ToLower())
-                ?? await _movieApiService.CreateMovieAsync(request.TitleMovieA);
+                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleA.ToLower())
+                ?? await _movieApiService.CreateMovieAsync(request.TitleA);
             Movie movieB = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleMovieB.ToLower())
-                ?? await _movieApiService.CreateMovieAsync(request.TitleMovieB);
+                .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleB.ToLower())
+                ?? await _movieApiService.CreateMovieAsync(request.TitleB);
 
             bool isNewMovieA = movieA.Id == 0;
             bool isNewMovieB = movieB.Id == 0;
@@ -321,12 +305,5 @@ namespace WhatsJustLike24.Server.Controllers
             return _context.Movies.Any(e => e.Id == id);
         }
 
-        public class MovieSimilarityRequest
-        {
-            public string TitleMovieA { get; set; }
-            public string TitleMovieB { get; set; }
-            public int SimilarityScore { get; set; }
-            public string Description { get; set; }  // Optional, based on whether you'd like a description.
-        }
     }
 }

@@ -176,9 +176,7 @@ namespace WhatsJustLike24.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable((string)null);
-
-                    b.ToView(null, (string)null);
+                    b.ToTable("SimilarityByTitleDTO");
                 });
 
             modelBuilder.Entity("WhatsJustLike24.Server.Data.Identity.AppUser", b =>
@@ -248,6 +246,110 @@ namespace WhatsJustLike24.Server.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.GameDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Cover")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Developer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("FirstRelease")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Genre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Platforms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId")
+                        .IsUnique();
+
+                    b.ToTable("GameDetails");
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.GameIsLike", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameIdA")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameIdB")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameIdA");
+
+                    b.HasIndex("GameIdB");
+
+                    b.ToTable("GameIsLike");
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.GameIsLikeDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GameIsLikeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SimilarityScore")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameIsLikeId");
+
+                    b.ToTable("GameIsLikeDetails");
                 });
 
             modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.IsLikeDetails", b =>
@@ -401,6 +503,47 @@ namespace WhatsJustLike24.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.GameDetails", b =>
+                {
+                    b.HasOne("WhatsJustLike24.Server.Data.Models.Game", "Game")
+                        .WithOne("GameDetails")
+                        .HasForeignKey("WhatsJustLike24.Server.Data.Models.GameDetails", "GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.GameIsLike", b =>
+                {
+                    b.HasOne("WhatsJustLike24.Server.Data.Models.Game", "GameA")
+                        .WithMany("IsLikeConnections")
+                        .HasForeignKey("GameIdA")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WhatsJustLike24.Server.Data.Models.Game", "GameB")
+                        .WithMany()
+                        .HasForeignKey("GameIdB")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GameA");
+
+                    b.Navigation("GameB");
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.GameIsLikeDetails", b =>
+                {
+                    b.HasOne("WhatsJustLike24.Server.Data.Models.GameIsLike", "GameIsLike")
+                        .WithMany("GameIsLikeDetails")
+                        .HasForeignKey("GameIsLikeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GameIsLike");
+                });
+
             modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.IsLikeDetails", b =>
                 {
                     b.HasOne("WhatsJustLike24.Server.Data.Models.MovieIsLike", "MovieIsLike")
@@ -440,6 +583,19 @@ namespace WhatsJustLike24.Server.Migrations
                     b.Navigation("MovieA");
 
                     b.Navigation("MovieB");
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.Game", b =>
+                {
+                    b.Navigation("GameDetails")
+                        .IsRequired();
+
+                    b.Navigation("IsLikeConnections");
+                });
+
+            modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.GameIsLike", b =>
+                {
+                    b.Navigation("GameIsLikeDetails");
                 });
 
             modelBuilder.Entity("WhatsJustLike24.Server.Data.Models.Movie", b =>

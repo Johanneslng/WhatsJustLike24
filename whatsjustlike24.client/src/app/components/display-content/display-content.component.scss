@@ -1,4 +1,4 @@
-.movie-comparison {
+.content-comparison {
   position: relative;
   display: flex;
   width: 80%;
@@ -25,7 +25,7 @@
       height: 100%;
       transition: z-index 250ms;
 
-      .slider-movie {
+      .slider-content {
         width: 100%;
         height: 100%;
         box-shadow: 0rem 1rem 4rem rgba(0, 0, 0, 0.2);
@@ -43,7 +43,7 @@
           object-fit: cover;
         }
 
-        .movie-info {
+        .content-info {
           position: absolute;
           bottom: 0;
           width: 100%;
@@ -57,7 +57,7 @@
           font-size: 200%;
         }
 
-        .movie-info p {
+        .content-info p {
           margin: 0;
           color: black;
         }
@@ -68,9 +68,9 @@
         width: 44%;
         height: auto;
 
-        .slider-movie {
+        .slider-content {
           opacity: 0.7;
-          transform: translateY(-10%) scale(0.7); 
+          transform: translateY(-10%) scale(0.7);
         }
       }
 
@@ -79,7 +79,7 @@
         width: 44%;
         height: auto;
 
-        .slider-movie {
+        .slider-content {
           opacity: 1;
           transform: translateY(0) scale(0.8);
         }
@@ -90,7 +90,7 @@
         width: 44%;
         height: auto;
 
-        .slider-movie {
+        .slider-content {
           opacity: 0.7;
           transform: translateY(10%) scale(0.7);
         }
@@ -99,7 +99,7 @@
       &.hideTop {
         z-index: 0;
 
-        .slider-movie {
+        .slider-content {
           transform: translateY(-40%) scale(0);
           opacity: 0;
         }
@@ -108,16 +108,16 @@
       &.hideBottom {
         z-index: 0;
 
-        .slider-movie {
-          transform: translateY(40%) scale(0); 
+        .slider-content {
+          transform: translateY(40%) scale(0);
           opacity: 0;
         }
       }
     }
   }
 
-  .original-movie {
-    width: 50%; 
+  .original-content {
+    width: 50%;
     height: auto;
     border-radius: 1rem;
     display: flex;
@@ -134,7 +134,7 @@
       object-fit: cover;
     }
 
-    .movie-info {
+    .content-info {
       position: absolute;
       bottom: 0;
       width: 100%;
@@ -150,7 +150,7 @@
       font-size: 200%;
     }
 
-    .movie-info p {
+    .content-info p {
       margin: 0;
       color: black;
     }
@@ -158,6 +158,6 @@
 }
 
 .comparison-sign {
-    width: 10%;
-    font-size: 600%;
+  width: 10%;
+  font-size: 600%;
 }

@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { SimilarMovie } from 'src/app/models/SimilarMovie';
+import { SimilarContent } from 'src/app/models/SimilarContent';
 import { Movie } from 'src/app/models/Movie'
-import { MovieWithDetails } from 'src/app/models/MovieWithDetails';
+import { MovieWithDetails } from 'src/app/models/ContentWithDetails';
+import { IContentService } from 'src/app/models/IContentService';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class GetMoviesService {
+export class GetMoviesService implements IContentService {
 
   private API_URL = environment.API_URL;
   constructor(private http: HttpClient) { }
@@ -37,22 +38,44 @@ export class GetMoviesService {
     );
   }
 
-  getSimilarMoviesByTitle(title: string): Observable<SimilarMovie[]> {
-    return this.http.get<SimilarMovie[]>(
+  fetchContent(title: string): Observable<SimilarContent[]> {
+    return this.http.get<SimilarContent[]>(
       this.API_URL + `/movies/SimilarByTitle?title=${title}`
+    ).pipe(
+      map((response: any[]) => {
+        return response.map(item => ({
+          name: item.title,
+          averageSimilarityScore: item.averageSimilarityScore,
+          similarityScoreCount: item.similarityScoreCount,
+          image: item.posterPath,
+          descriptionList: item.descriptionList,
+          similarityScoreList: item.similarityScoreList
+        }));
+      })
     );
   }
 
-  getSimilarTitle(title: string): Observable<string> {
+  fetchSimilarTitle(title: string): Observable<string> {
     return this.http.get(
       this.API_URL + `/movies/SimilarTitles?title=${title}`
       , { responseType: 'text' }
     );
   }
 
-  getMovieWithDetails(title: string): Observable<MovieWithDetails> {
-    return this.http.get<MovieWithDetails>(
-      this.API_URL + `/movies/DetailsByTitle?title=${title}`
+  fetchDetails(title: string): Observable<MovieWithDetails> {
+    return this.http.get<any>(
+      `${this.API_URL}/movies/DetailsByTitle?title=${title}`
+    ).pipe(
+      map(response => ({
+        type: "Movie",
+        name: response.title,         // Mapping API's `title` to `MovieWithDetails.title`
+        image: response.posterPath, // Mapping API's `posterPath` to `MovieWithDetails.posterPath`
+        genre: response.genre,         // Mapping API's `genre` to `MovieWithDetails.genre`
+        director: response.director,     // Mapping API's `director` to `MovieWithDetails.director`
+        description: response.description // Include additional fields if needed
+      }))
     );
   }
+
+
 }

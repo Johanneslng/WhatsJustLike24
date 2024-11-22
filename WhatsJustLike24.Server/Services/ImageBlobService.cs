@@ -20,12 +20,12 @@ namespace WhatsJustLike24.Server.Services
             _httpClient = new HttpClient();
         }
 
-        public async Task<string> UploadImageFromUrlAsync(string ImageUrl)
+        public async Task<string> UploadImageFromUrlAsync(string ImageUrl, string blobFolder)
         {
             var blobServiceClient = new BlobServiceClient(_connectionString);
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             string blobName = Guid.NewGuid().ToString() + Path.GetExtension(ImageUrl);
-            var blobClient = containerClient.GetBlobClient(blobName);
+            var blobClient = containerClient.GetBlobClient($"{blobFolder}/{blobName}");
 
             var imageBytes = await _httpClient.GetByteArrayAsync(ImageUrl);
 
