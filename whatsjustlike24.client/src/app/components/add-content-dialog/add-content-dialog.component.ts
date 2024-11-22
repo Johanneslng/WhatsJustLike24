@@ -7,7 +7,7 @@ import { UserService } from 'src/app/services/apiCalls/user.service';
 import { ContentRelation } from 'src/app/models/ContentRelation';
 import { ContentType } from 'src/app/models/Enums/ContentType';
 import { IPostContentService } from 'src/app/models/IPostContentService';
-
+import { ContentTypeSingular } from 'src/app/helpers/ContentTypeSingular';
 
 @Component({
   selector: 'app-add-content-dialog',
@@ -17,6 +17,7 @@ import { IPostContentService } from 'src/app/models/IPostContentService';
 export class AddContentDialogComponent {
 
   private serviceMapping: { [key in ContentType]: IPostContentService };
+  private contentTypeSingular: ContentTypeSingular = new ContentTypeSingular();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -65,7 +66,7 @@ export class AddContentDialogComponent {
     return true; //TODO return this.userService.isLoggedIn();
   }
 
-  getEnumLabel(type: ContentType): string {
-    return ContentType[type];
+  public getContentTypeSingular(type: ContentType): string {
+    return this.contentTypeSingular.contentStringSingular(type)
   }
 }

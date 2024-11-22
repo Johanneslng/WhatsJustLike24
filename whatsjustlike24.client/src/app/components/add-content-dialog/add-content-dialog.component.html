@@ -1,12 +1,12 @@
 <div *ngIf="isLoggedIn()">
-  <h2 mat-dialog-title>Add a XYZ just like {{this.data.currentSearchValue}}</h2>
+  <h2 mat-dialog-title>Add a {{ getContentTypeSingular(this.data.selectedType) }} just like {{this.data.currentSearchValue}}</h2>
 
   <mat-dialog-content class="mat-typography">
     <form>
       <!-- Title field -->
       <div class="form-field">
         <mat-form-field>
-          <mat-label>XYZ Title:</mat-label>
+          <mat-label>{{ getContentTypeSingular(this.data.selectedType) }} Title:</mat-label>
           <input matInput id="title" [(ngModel)]="contentRelation.titleA" name="title" required>
         </mat-form-field>
       </div>
@@ -32,6 +32,6 @@
 <h2 mat-dialog-title *ngIf="!isLoggedIn()">To add movies please log in</h2>
 <mat-dialog-actions align="end">
   <button *ngIf="!isLoggedIn()" mat-raised-button color="primary" class="toolbar-button" (click)="openLogin()">Login</button>
-  <button *ngIf="isLoggedIn()" mat-button [mat-dialog-close]="true" (click)="addContent()" cdkFocusInitial>Add {{ getEnumLabel(this.data.selectedType) }}</button>
+  <button *ngIf="isLoggedIn()" mat-button [mat-dialog-close]="true" (click)="addContent()" cdkFocusInitial>Add {{ getContentTypeSingular(this.data.selectedType) }}</button>
   <button mat-button mat-dialog-close>Cancel</button>
 </mat-dialog-actions>

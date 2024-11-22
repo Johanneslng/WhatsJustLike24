@@ -48,7 +48,7 @@
 
 <!-- No Results Found -->
 <div *ngIf="similarContent.length === 0 && !isLoading && hasSearched">
-  <h2>There are no XYZ like {{ currentSearchValue }} in our Database</h2>
+  <h2>There are no {{ getContentTypePlural() }} like this in our Database</h2>
   <button color="secondary" (click)="exchangecurrentSearchValueWithSimilarTitle()">
     Did you mean {{ similarTitle }}?
   </button>

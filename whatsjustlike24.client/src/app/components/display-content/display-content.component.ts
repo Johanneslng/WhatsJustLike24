@@ -14,12 +14,13 @@ import { SimilarContent } from 'src/app/models/SimilarContent';
 //import { MovieWithDetails } from 'src/app/models/MovieWithDetails';
 import { SetSearchValueService } from 'src/app/services/set-search-value.service';
 import { ContentType } from 'src/app/models/Enums/ContentType';
-import { Subscription, BehaviorSubject, combineLatest } from 'rxjs';
+import { Subscription, BehaviorSubject, combineLatest, catchError, of } from 'rxjs';
 import { distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { DisplaySimilarityDetailsComponent } from '../display-similarity-details/display-similarity-details.component';
 import { MatDialog } from '@angular/material/dialog';
 import { IContentService } from 'src/app/models/IContentService';
 import { ContentWithDetails, GameWithDetails, MovieWithDetails } from 'src/app/models/ContentWithDetails';
+import { ContentTypeSingular } from 'src/app/helpers/ContentTypeSingular';
 
 
 @Component({
@@ -55,6 +56,8 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
       fetchSimilarTitle: (searchValue: string) => void;
     };
   };
+
+  private contentTypeSingular: ContentTypeSingular = new ContentTypeSingular();
 
   constructor(
     private getMoviesService: GetMoviesService,
@@ -109,27 +112,35 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
           switchMap(({ value, type }) => {
             if (!value) return [];
             this.isLoading = true;
+            this.hasSearched = false;
             const service = this.serviceMapping[type];
             return combineLatest([
-              service.fetchDetails(value),
-              service.fetchContent(value),
-              service.fetchSimilarTitle(value),
+              service.fetchDetails(value).pipe(catchError((err) => this.handleError(err, 'details'))),
+              service.fetchContent(value).pipe(catchError((err) => this.handleError(err, 'content'))),
+              service.fetchSimilarTitle(value).pipe(catchError((err) => this.handleError(err, 'similar title'))),
             ]);
           })
         )
         .subscribe(
-          ([details, content, similarTitle]) => {
-            this.searchContent = this.processDetails(details);
+          ([details, content, similarTitle]: [ContentWithDetails | null, SimilarContent[], string]) => {
+            if (details) {
+              this.searchContent = this.processDetails(details);
+            } else {
+              console.warn('Details are null');
+              this.searchContent = null; // Or handle as needed
+            }
             this.similarContent = this.processSimilarContent(content, this.searchState$.value.type);
             this.similarTitle = similarTitle;
             this.isLoading = false;
+            this.hasSearched = true;
           },
           (error) => {
-            console.error('Error fetching data:', error);
+            console.error('Unhandled error:', error);
             this.isLoading = false;
           }
         )
     );
+
   }
 
   ngOnDestroy(): void {
@@ -160,6 +171,18 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
         return '';
     }
   }
+
+  public getContentTypePlural(): string {
+    return this.contentTypeSingular.contentStringPlural(this.searchState$.value.type)
+  }
+
+
+  private handleError(error: any, context: string) {
+    console.error(`Error fetching ${context}:`, error);
+    this.isLoading = false; // Ensure loading state resets
+    return of(null); // Return a fallback value to keep the stream alive
+  }
+
 
   private fetchDetails(service: IContentService, searchValue: string): void {
     this.isLoading = true;
@@ -273,11 +296,16 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
   }
 
   public exchangecurrentSearchValueWithSimilarTitle(): void {
-    const service = this.serviceMapping[this.selectedType];
+    if (!this.similarTitle) {
+      console.warn('No similar title to exchange with');
+      return;
+    }
 
-    this.currentSearchValue = this.similarTitle;
-    this.fetchContent(service, this.similarTitle); 
-    this.fetchDetails(service, this.similarTitle);
+    this.searchState$.next({
+      value: this.similarTitle,
+      type: this.searchState$.value.type
+    });
+
     this.similarTitle = '';
   }
 
