@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WhatsJustLike24.Server.Data.Models
 {
-    [Table("Games")]
-    public class Game
+    [Table("Books")]
+    public class Book
     {
         [Key]
         public int Id { get; set; }
@@ -13,7 +13,7 @@ namespace WhatsJustLike24.Server.Data.Models
         public string Title { get; set; }
 
         // Navigation properties
-        public virtual GameDetails GameDetails { get; set; }
-        public virtual ICollection<GameIsLike> IsLikeConnections { get; set; }
+        public virtual BookDetails BookDetails { get; set; }
+        public virtual ICollection<BookIsLike> IsLikeConnections { get; set; }
     }
 }

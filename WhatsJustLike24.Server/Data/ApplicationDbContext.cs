@@ -73,6 +73,61 @@ namespace WhatsJustLike24.Server.Data
                 .HasForeignKey(gild => gild.GameIsLikeId);
 
 
+            // Configure the relationships for Books
+
+            // Many-to-Many relationship for Books
+            modelBuilder.Entity<BookIsLike>()
+                .HasOne<Book>(bil => bil.BookA)
+                .WithMany(b => b.IsLikeConnections)
+                .HasForeignKey(bil => bil.BookIdA)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            modelBuilder.Entity<BookIsLike>()
+                .HasOne<Book>(bil => bil.BookB)
+                .WithMany() // No need to define this side if you don't have a navigation property back
+                .HasForeignKey(bil => bil.BookIdB)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            // One-to-One relationship between Book and BookDetails
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.BookDetails)
+                .WithOne(bd => bd.Book)
+                .HasForeignKey<BookDetails>(bd => bd.BookId);
+
+            // One-to-Many relationship between BookIsLike and BookIsLikeDetails
+            modelBuilder.Entity<BookIsLike>()
+                .HasMany(bil => bil.BookIsLikeDetails)
+                .WithOne(bild => bild.BookIsLike)
+                .HasForeignKey(bild => bild.BookIsLikeId);
+
+
+            // Configure the relationships for Shows
+
+            // Many-to-Many relationship for Shows
+            modelBuilder.Entity<ShowIsLike>()
+                .HasOne<Show>(sil => sil.ShowA)
+                .WithMany(s => s.IsLikeConnections)
+                .HasForeignKey(sil => sil.ShowIdA)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            modelBuilder.Entity<ShowIsLike>()
+                .HasOne<Show>(sil => sil.ShowB)
+                .WithMany() // No need to define this side if you don't have a navigation property back
+                .HasForeignKey(sil => sil.ShowIdB)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            // One-to-One relationship between Book and BookDetails
+            modelBuilder.Entity<Show>()
+                .HasOne(s => s.ShowDetails)
+                .WithOne(sd => sd.Show)
+                .HasForeignKey<ShowDetails>(sd => sd.ShowId);
+
+            // One-to-Many relationship between BookIsLike and BookIsLikeDetails
+            modelBuilder.Entity<ShowIsLike>()
+                .HasMany(sil => sil.ShowIsLikeDetails)
+                .WithOne(sild => sild.ShowIsLike)
+                .HasForeignKey(sild => sild.ShowIsLikeId);
+
             //modelBuilder.Entity<SimilarityByTitleDTO>().HasNoKey().ToView(null);
 
             modelBuilder.Entity<SimilarityByTitleDTO>().HasNoKey();
@@ -83,6 +138,14 @@ namespace WhatsJustLike24.Server.Data
 
             modelBuilder.HasDbFunction(() => GetGameSimilarityDetails(default!))
             .HasName("GetGameSimilarityDetails")
+            .HasSchema("dbo");
+
+            modelBuilder.HasDbFunction(() => GetBookSimilarityDetails(default!))
+            .HasName("GetBookSimilarityDetails")
+            .HasSchema("dbo");
+
+            modelBuilder.HasDbFunction(() => GetShowSimilarityDetails(default!))
+            .HasName("GetShowSimilarityDetails")
             .HasSchema("dbo");
 
 
@@ -98,6 +161,16 @@ namespace WhatsJustLike24.Server.Data
             return FromExpression(() => GetGameSimilarityDetails(title));
         }
 
+        public IQueryable<SimilarityByTitleDTO> GetBookSimilarityDetails(string title)
+        {
+            return FromExpression(() => GetBookSimilarityDetails(title));
+        }
+
+        public IQueryable<SimilarityByTitleDTO> GetShowSimilarityDetails(string title)
+        {
+            return FromExpression(() => GetShowSimilarityDetails(title));
+        }
+
         // DbSet properties for Movies
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieDetails> MovieDetails { get; set; }
@@ -109,6 +182,18 @@ namespace WhatsJustLike24.Server.Data
         public DbSet<GameDetails> GameDetails { get; set; }
         public DbSet<GameIsLike> GameIsLike { get; set; }
         public DbSet<GameIsLikeDetails> GameIsLikeDetails { get; set; }
+
+        // DbSet properties for Books
+        public DbSet<Book> Books { get; set; }
+        public DbSet<BookDetails> BookDetails { get; set; }
+        public DbSet<BookIsLike> BookIsLike { get; set; }
+        public DbSet<BookIsLikeDetails> BookIsLikeDetails { get; set; }
+
+        // DbSet properties for Shows
+        public DbSet<Show> Shows { get; set; }
+        public DbSet<ShowDetails> ShowDetails { get; set; }
+        public DbSet<ShowIsLike> ShowIsLike { get; set; }
+        public DbSet<ShowIsLikeDetails> ShowIsLikeDetails { get; set; }
 
         public DbSet<AppUser> AppUsers { get; set; }
 
