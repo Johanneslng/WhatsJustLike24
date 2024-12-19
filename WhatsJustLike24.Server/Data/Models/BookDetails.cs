@@ -11,10 +11,16 @@ namespace WhatsJustLike24.Server.Data.Models
         public string? Genre { get; set; }
         public DateTime? FirstRelease { get; set; }
         public string? Author { get; set; }
+        public string? Publisher { get; set; }
         [Required]
         public string Description { get; set; }
         [Required]
         public string Cover { get; set; }
+        public string? Series { get; set; }
+
+        public long? Isbn { get; set; }
+        public long? Isbn13 { get; set; }
+
         [ForeignKey("Book")]
         public int BookId { get; set; }
 
