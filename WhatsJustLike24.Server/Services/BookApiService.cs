@@ -1,8 +1,10 @@
-﻿using System.Text.Json;
+﻿using System.Reflection.Metadata;
+using System.Text.Json;
 using RestSharp;
 using WhatsJustLike24.Server.Data;
 using WhatsJustLike24.Server.Data.DTOs;
 using WhatsJustLike24.Server.Data.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WhatsJustLike24.Server.Services
 {
@@ -22,7 +24,7 @@ namespace WhatsJustLike24.Server.Services
             _configuration = configuration;
             _imageBlobService = imageBlobService;
 
-            var options = new RestClientOptions("https://openlibrary.org/search.json");
+            var options = new RestClientOptions("https://openlibrary.org");
             {
                 // Additional options if needed
             };
@@ -33,8 +35,9 @@ namespace WhatsJustLike24.Server.Services
         {
             try
             {
-                var request = new RestRequest("");
+                var request = new RestRequest("/search.json", Method.Get);
                 request.AddHeader("accept", "application/json");
+                
                 request.AddQueryParameter("title", title);
 
                 // Send the request
@@ -42,38 +45,94 @@ namespace WhatsJustLike24.Server.Services
 
                 if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content))
                 {
-                    throw new Exception("Failed to retrieve movie data from the API.");
+                    throw new Exception("Failed to retrieve book data from the API.");
                 }
 
                 var jsonDocument = JsonDocument.Parse(response.Content);
 
-                // Check if results array exists and is not empty
-                var results = jsonDocument.RootElement.GetProperty("results");
-                if (results.GetArrayLength() == 0)
+                // Check if docs array exists and is not empty
+                var docs = jsonDocument.RootElement.GetProperty("docs");
+                if (docs.GetArrayLength() == 0)
                 {
-                    throw new Exception("No movies found for the given query.");
+                    throw new Exception("No books found for the given query.");
+                }
+                var books = JsonSerializer.Deserialize<List<BookApiResponse>>(docs);
+
+                int minLevenshtein = Int32.MaxValue;
+                int firstPublished = 9999;
+                var bookApiResponse = new BookApiResponse();
+                foreach (var item in books)
+                {
+                    int levenshteinDistance = LevenshteinDistance.Calculate(title, item.Title);
+                    if (levenshteinDistance < minLevenshtein && item.FirstPublished <= firstPublished && item.FirstPublished.HasValue)
+                    {
+                        bookApiResponse = item;
+                        minLevenshtein = levenshteinDistance;
+                        firstPublished = item.FirstPublished ?? firstPublished;
+                    }
+                    else if (levenshteinDistance == minLevenshtein && item.FirstPublished < firstPublished && item.FirstPublished.HasValue)
+                    {
+                        bookApiResponse = item;
+                        firstPublished = item.FirstPublished ?? firstPublished;
+                    }
                 }
 
-                var firstResult = results[0];
+                //Get additional info from works and books
+                BookApiWorkResponse description = new BookApiWorkResponse();
+                try
+                {
+                    var requestWorks = new RestRequest($"{bookApiResponse.WorkLink}");
+                    var worksResponse = await _client.GetAsync(requestWorks);
+                    var jsonWorks = JsonDocument.Parse(worksResponse.Content);
+                    var descJson = jsonWorks.RootElement.GetProperty("description");
+                    description = JsonSerializer.Deserialize<BookApiWorkResponse>(descJson);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                }
 
-                var imagePath = "test"; //https://image.tmdb.org/t/p/w500" + firstResult.GetProperty("poster_path").GetString();
+                BookApiAdditionalInfoResponse booksAdditionalInfo = new BookApiAdditionalInfoResponse();
+                try
+                {
+                    var requestBooksAdditionalInfo = new RestRequest($"books/{bookApiResponse.Cover}");
+                    var booksAdditionalInfoResponse = await _client.GetAsync(requestBooksAdditionalInfo);
+                    var jsonAdditionalInfo = JsonDocument.Parse(booksAdditionalInfoResponse.Content);
+                    booksAdditionalInfo = JsonSerializer.Deserialize<BookApiAdditionalInfoResponse>(jsonAdditionalInfo);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                }
+
+
+                var imagePath = String.Concat("https://covers.openlibrary.org/b/olid/", bookApiResponse.Cover, "-L.jpg");
 
                 // Upload image to Blob Storage
-                //var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "movies");
+                var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "books");
 
-                return new BookDBDTO
+                var example = new BookDBDTO
                 {
-                    Title = "Test",
-                    Description = "Description",
-                    Cover = imagePath
+                    Title = bookApiResponse.Title,
+                    Description = description.Description ?? "No Description found",
+                    Genre = String.Join(", ", bookApiResponse.Genres ?? new List<string>()),
+                    Author = String.Join(", ", bookApiResponse.Author ?? new List<string>()),
+                    FirstRelease = bookApiResponse.FirstPublished,
+                    Publisher = string.IsNullOrEmpty(String.Join(", ", booksAdditionalInfo.Publishers ?? new List<string>())) ? String.Join(", ", bookApiResponse.Publishers ?? new List<string>()) : String.Join(", ", booksAdditionalInfo.Publishers ?? new List<string>()),
+                    Series = String.Join(", ", booksAdditionalInfo.Series ?? new List<string>()),
+                    Isbn = String.Join(", ", booksAdditionalInfo.Isbn ?? new List<string>()) ?? String.Join(", ", bookApiResponse.Isbn ?? new List<string>()),
+                    //Isbn13 = String.Join(", ", booksAdditionalInfo.Isbn13) ?? "No ISBN13 found"
+                    Cover = blobName,
+                    Languages = String.Join(", ", bookApiResponse.Langugages ?? new List<string>()),
+                    Pages = bookApiResponse.Pages ?? 0
                 };
+
+                return example;
             }
             catch (Exception ex)
             {
-                // Log the error (replace with your logging mechanism)
                 Console.WriteLine($"Error in GetBookAsync: {ex.Message}");
 
-                // Optionally rethrow the exception or return a default/fallback value
                 throw new Exception("An error occurred while fetching the book details.", ex);
             }
         }

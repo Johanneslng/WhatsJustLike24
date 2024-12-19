@@ -13,35 +13,28 @@ namespace WhatsJustLike24.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class GamesController : ControllerBase
+    public class BooksController : ControllerBase
     {
-        private readonly GameApiService _gameApiService;
+        private readonly BookApiService _bookApiService;
         private readonly TokenService _tokenService;
         private readonly ApplicationDbContext _context;
-        private readonly GameDTOMapper _gameDTOMapper;
+        //private readonly BookDTOMapper _bookDTOMapper;
 
-        public GamesController(ApplicationDbContext context, GameApiService gameApiService, GameDTOMapper gameDTOMapper, TokenService tokenService)
+        public BooksController(ApplicationDbContext context, BookApiService bookApiService)//, BookDTOMapper bookDTOMapper)
         {
             _context = context;
-            _gameApiService = gameApiService;
-            _gameDTOMapper = gameDTOMapper;
-            _tokenService = tokenService;
+            _bookApiService = bookApiService;
+            //_bookDTOMapper = bookDTOMapper;
         }
 
-        [HttpPost("token"), AllowAnonymous]
-        public async Task<IActionResult> RetrieveTwitchToken()
-        {
-            var token = await _tokenService.GetTwitchTokenAsync();
-            return Ok(token);
-        }
 
         [HttpGet("title"), AllowAnonymous]
-        public async Task<IActionResult> GetGame([FromQuery] string name)
+        public async Task<IActionResult> GetBook([FromQuery] string name)
         {
-            var Game = await _gameApiService.GetGameAsync(name);
-            return Ok(Game);
+            var Book = await _bookApiService.GetBookAsync(name);
+            return Ok(Book);
         }
-
+        /*
         [HttpPost, AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] string gameQuery)
         {
@@ -234,7 +227,7 @@ namespace WhatsJustLike24.Server.Controllers
             };
 
             return Ok(new { Similarity = gameIsLikeDto, Details = gameIsLikeDetailDto });
-        }
-        
+        }*/
+
     }
 }

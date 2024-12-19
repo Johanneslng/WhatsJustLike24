@@ -18,8 +18,10 @@ namespace WhatsJustLike24.Server.Data.Models
         public string Cover { get; set; }
         public string? Series { get; set; }
 
-        public long? Isbn { get; set; }
-        public long? Isbn13 { get; set; }
+        public string? Isbn { get; set; }
+        public string? Isbn13 { get; set; }
+        public string? Languages { get; set; }
+        public int? Pages { get; set; }
 
         [ForeignKey("Book")]
         public int BookId { get; set; }
