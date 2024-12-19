@@ -164,8 +164,10 @@ namespace WhatsJustLike24.Server.Services
                 {
                     Description = bookData.Description,
                     Cover = bookData.Cover,
-                    Author = "Placeholder",
-                    Genre = "Placeholder"
+                    Author = bookData.Author,
+                    Genre = bookData.Genre,
+                    FirstRelease = bookData.FirstRelease,
+
                 }
             };
 

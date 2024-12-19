@@ -9,7 +9,7 @@ namespace WhatsJustLike24.Server.Data.Models
         [Key]
         public int Id { get; set; }
         public string? Genre { get; set; }
-        public DateTime? FirstRelease { get; set; }
+        public int? FirstRelease { get; set; }
         public string? Author { get; set; }
         public string? Publisher { get; set; }
         [Required]
