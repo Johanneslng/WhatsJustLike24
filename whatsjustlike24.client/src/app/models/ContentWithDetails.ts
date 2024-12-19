@@ -16,7 +16,17 @@ export type GameWithDetails = {
   description: string;
 };
 
+export type ShowWithDetails = {
+  type: 'Show'; // Discriminant
+  name: string;
+  genre: string;
+  director: string;
+  image: string;
+  description: string;
+  firstAirDate: string;
+};
+
 
 
 // Combine into a union type
-export type ContentWithDetails = MovieWithDetails | GameWithDetails;
+export type ContentWithDetails = MovieWithDetails | GameWithDetails | ShowWithDetails;

@@ -63,7 +63,7 @@ namespace WhatsJustLike24.Server.Services
                 var imagePath = "https://image.tmdb.org/t/p/w500" + firstResult.GetProperty("poster_path").GetString();
 
                 // Upload image to Blob Storage
-                var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "movies");
+                var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "shows");
 
                 return new MovieDBShowDTO
                 {

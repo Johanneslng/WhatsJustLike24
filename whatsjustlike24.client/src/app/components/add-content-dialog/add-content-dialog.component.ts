@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PostMoviesService } from 'src/app/services/apiCalls/post-movies.service';
 import { PostGamesService } from 'src/app/services/apiCalls/post-games.service';
+import { PostShowsService } from 'src/app/services/apiCalls/post-shows.service';
 import { LoginComponent } from 'src/app/components/login/login.component';
 import { UserService } from 'src/app/services/apiCalls/user.service';
 import { ContentRelation } from 'src/app/models/ContentRelation';
@@ -23,13 +24,14 @@ export class AddContentDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private postMoviesService: PostMoviesService,
     private postGamesService: PostGamesService,
+    private postShowsService: PostShowsService,
     private userService: UserService,
     public dialog: MatDialog,
   ) {
     this.serviceMapping = {
       [ContentType.Movies]: this.postMoviesService,
       [ContentType.Games]: this.postGamesService,
-      [ContentType.Shows]: this.postGamesService,
+      [ContentType.Shows]: this.postShowsService,
       [ContentType.Books]: this.postGamesService,
     };
 
@@ -41,6 +43,7 @@ export class AddContentDialogComponent {
     similarityScore: undefined,
     description: ''
   };
+
 
 
   addContent(): void {

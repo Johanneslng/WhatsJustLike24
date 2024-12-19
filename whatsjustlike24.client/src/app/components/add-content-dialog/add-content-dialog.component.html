@@ -3,6 +3,15 @@
 
   <mat-dialog-content class="mat-typography">
     <form>
+
+      <!-- Title Original Content field -->
+      <div class="form-field">
+        <mat-form-field>
+          <mat-label>{{ getContentTypeSingular(this.data.selectedType) }} Title:</mat-label>
+          <input matInput id="title" [(ngModel)]="contentRelation.titleB" name="titleB"  required>
+        </mat-form-field>
+      </div>
+
       <!-- Title field -->
       <div class="form-field">
         <mat-form-field>

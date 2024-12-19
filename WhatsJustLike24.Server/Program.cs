@@ -33,7 +33,9 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddScoped<MovieApiService>();
+builder.Services.AddScoped<ShowApiService>();
 builder.Services.AddScoped<MovieDTOMapper>();
+builder.Services.AddScoped<ShowDTOMapper>();
 builder.Services.AddScoped<GameDTOMapper>();
 builder.Services.AddScoped<GameApiService>();
 builder.Services.AddScoped<GameLookupService>();

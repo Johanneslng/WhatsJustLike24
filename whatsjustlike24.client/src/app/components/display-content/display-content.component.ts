@@ -9,6 +9,7 @@ import {
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { GetMoviesService } from 'src/app/services/apiCalls/get-movies.service';
 import { GetGamesService } from 'src/app/services/apiCalls/get-games.service';
+import { GetShowsService } from 'src/app/services/apiCalls/get-shows.service';
 import { SimilarMovie } from 'src/app/models/SimilarMovie';
 import { SimilarContent } from 'src/app/models/SimilarContent';
 //import { MovieWithDetails } from 'src/app/models/MovieWithDetails';
@@ -62,6 +63,7 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
   constructor(
     private getMoviesService: GetMoviesService,
     private getGamesService: GetGamesService,
+    private getShowsService: GetShowsService,
     private setSearchValueService: SetSearchValueService,
     public dialog: MatDialog
   )
@@ -77,10 +79,10 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
         fetchContent: (searchValue: string) => this.fetchContent(this.serviceMapping[ContentType.Games], searchValue),
         fetchSimilarTitle: (searchValue: string) => this.fetchSimilarTitle(this.serviceMapping[ContentType.Games], searchValue),
       },
-      [ContentType.Shows]: { //TODO Exchange to Shows
-        fetchDetails: (searchValue: string) => this.fetchDetails(this.serviceMapping[ContentType.Games], searchValue),
-        fetchContent: (searchValue: string) => this.fetchContent(this.serviceMapping[ContentType.Games], searchValue),
-        fetchSimilarTitle: (searchValue: string) => this.fetchSimilarTitle(this.serviceMapping[ContentType.Games], searchValue),
+      [ContentType.Shows]: {
+        fetchDetails: (searchValue: string) => this.fetchDetails(this.serviceMapping[ContentType.Shows], searchValue),
+        fetchContent: (searchValue: string) => this.fetchContent(this.serviceMapping[ContentType.Shows], searchValue),
+        fetchSimilarTitle: (searchValue: string) => this.fetchSimilarTitle(this.serviceMapping[ContentType.Shows], searchValue),
       },
       [ContentType.Books]: { //TODO Exchange to books
         fetchDetails: (searchValue: string) => this.fetchDetails(this.serviceMapping[ContentType.Games], searchValue),
@@ -92,7 +94,7 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
     this.serviceMapping = {
       [ContentType.Movies]: this.getMoviesService,
       [ContentType.Games]: this.getGamesService,
-      [ContentType.Shows]: this.getGamesService,
+      [ContentType.Shows]: this.getShowsService,
       [ContentType.Books]: this.getGamesService
     };
   }
@@ -167,6 +169,8 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
         return 'movies/';
       case ContentType.Games:
         return 'games/';
+      case ContentType.Shows:
+        return 'shows/';
       default:
         return '';
     }
@@ -209,6 +213,14 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
             console.log('Processed game details:', this.searchContent);
             break;
 
+          case 'Show':
+            this.searchContent = {
+              ...response,
+              image: this.imageUrl + 'shows/' + response.image
+            };
+            console.log('Processed show details:', this.searchContent);
+            break;
+
           default:
             console.error('Unknown content type:', response);
             break;
@@ -245,14 +257,18 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
             }));
             break;
 
+          case ContentType.Shows:
+            this.similarContent = response.map(content => ({
+              ...content,
+              image: this.imageUrl + 'shows/' + content.image
+
+            }));
+            break;
+
           default:
             console.error('Unknown content type:', response);
             break;
         }
-        this.similarContent = response.map(content => ({
-          ...content,
-          image: this.imageUrl + 'movies/' + content.image //TODO variablize
-        }));
         this.isLoading = false;
       },
       (error) => {

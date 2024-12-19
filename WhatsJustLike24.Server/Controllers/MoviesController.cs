@@ -218,8 +218,6 @@ namespace WhatsJustLike24.Server.Controllers
             }
         }
 
-
-
         // POST: /Movies/AddSimilarity
         //[Authorize]
         [HttpPost("AddSimilarity"), AllowAnonymous]
@@ -296,8 +294,6 @@ namespace WhatsJustLike24.Server.Controllers
 
             return Ok(new { Similarity = movieIsLikeDto, Details = movieIsLikeDetailDto });
         }
-
-
 
 
         private bool MovieExists(int id)
