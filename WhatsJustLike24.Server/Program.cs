@@ -38,6 +38,7 @@ builder.Services.AddScoped<BookApiService>();
 builder.Services.AddScoped<MovieDTOMapper>();
 builder.Services.AddScoped<ShowDTOMapper>();
 builder.Services.AddScoped<GameDTOMapper>();
+builder.Services.AddScoped<BookDTOMapper>();
 builder.Services.AddScoped<GameApiService>();
 builder.Services.AddScoped<GameLookupService>();
 builder.Services.AddSingleton(s => new RestClient("https://api.example.com"));

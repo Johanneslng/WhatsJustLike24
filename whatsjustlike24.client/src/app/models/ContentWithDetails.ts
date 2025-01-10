@@ -26,7 +26,21 @@ export type ShowWithDetails = {
   firstAirDate: string;
 };
 
+export type BookWithDetails = {
+  type: 'Book'; // Discriminant
+  name: string;
+  genre: string;
+  author: string;
+  image: string;
+  description: string;
+  firstRelease: string;
+  series: string;
+  isbn: string;
+  pages: number;
+  publisher: string;
+  languages: string;
+};
 
 
 // Combine into a union type
-export type ContentWithDetails = MovieWithDetails | GameWithDetails | ShowWithDetails;
+export type ContentWithDetails = MovieWithDetails | GameWithDetails | ShowWithDetails | BookWithDetails;

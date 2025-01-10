@@ -20,7 +20,7 @@ export class SearchComponent {
     { label: 'Movie', value: ContentType.Movies },
     { label: 'TV-Show', value: ContentType.Shows },
     { label: 'Game', value: ContentType.Games },
-    { label: 'Novel', value: ContentType.Books }
+    { label: 'Book', value: ContentType.Books }
   ];
   constructor(private setSearchValueService: SetSearchValueService) { }
 

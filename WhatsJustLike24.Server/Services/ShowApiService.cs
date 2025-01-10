@@ -64,14 +64,21 @@ namespace WhatsJustLike24.Server.Services
 
                 // Upload image to Blob Storage
                 var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "shows");
-
+                
+                JsonElement genreIds = firstResult.GetProperty("genre_ids");
+                List<string> genreList = new List<string>();
+                foreach (var genre in genreIds.EnumerateArray())
+                {
+                    genreList.Add(ShowGenres[genre.GetInt32()]);
+                }
                 return new MovieDBShowDTO
                 {
                     OriginalLanguage = firstResult.GetProperty("original_language").GetString(),
                     OriginalTitle = firstResult.GetProperty("original_name").GetString(),
                     Summary = firstResult.GetProperty("overview").GetString(),
                     PosterPath = blobName,
-                    FirstAirDate = DateTime.Parse(firstResult.GetProperty("first_air_date").GetString())
+                    FirstAirDate = DateTime.Parse(firstResult.GetProperty("first_air_date").GetString()),
+                    Genres = string.Join(", ", genreList)
                 };
             }
             catch (Exception ex)
@@ -113,7 +120,7 @@ namespace WhatsJustLike24.Server.Services
                     PosterPath = data.PosterPath,
                     FirstAirDate = data.FirstAirDate,
                     Director = "Placeholder",
-                    Genre = "Placeholder"
+                    Genre = data.Genres ?? ""
                 }
             };
 
@@ -122,5 +129,25 @@ namespace WhatsJustLike24.Server.Services
 
             return show;
         }
+
+        private Dictionary<int, string> ShowGenres = new Dictionary<int, string>()
+        {
+            {16, "Animation" },
+            {18, "Drama" },
+            {35, "Comedy" },
+            {37, "Western" },
+            {80, "Crime" },
+            {99, "Documentary" },
+            {9648, "Mystery" },
+            {10751, "Family" },
+            {10759, "Action & Adventure" },
+            {10762, "Kids" },
+            {10763, "News" },
+            {10764, "Reality" },
+            {10765, "Sci-Fi & Fantasy" },
+            {10766, "Soap" },
+            {10767, "Talk" },
+            {10768, "War & Politics" }
+        };
     }
 }

@@ -7,7 +7,6 @@ using WhatsJustLike24.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using WhatsJustLike24.Server.Data.DTOs;
 using WhatsJustLike24.Server.Data.Requests;
-using static Azure.Core.HttpHeader;
 using Microsoft.Data.SqlClient;
 namespace WhatsJustLike24.Server.Controllers
 {
@@ -18,13 +17,13 @@ namespace WhatsJustLike24.Server.Controllers
         private readonly BookApiService _bookApiService;
         private readonly TokenService _tokenService;
         private readonly ApplicationDbContext _context;
-        //private readonly BookDTOMapper _bookDTOMapper;
+        private readonly BookDTOMapper _bookDTOMapper;
 
-        public BooksController(ApplicationDbContext context, BookApiService bookApiService)//, BookDTOMapper bookDTOMapper)
+        public BooksController(ApplicationDbContext context, BookApiService bookApiService, BookDTOMapper bookDTOMapper)
         {
             _context = context;
             _bookApiService = bookApiService;
-            //_bookDTOMapper = bookDTOMapper;
+            _bookDTOMapper = bookDTOMapper;
         }
 
 
@@ -34,16 +33,16 @@ namespace WhatsJustLike24.Server.Controllers
             var Book = await _bookApiService.GetBookAsync(name);
             return Ok(Book);
         }
-        /*
+        
         [HttpPost, AllowAnonymous]
-        public async Task<IActionResult> Create([FromBody] string gameQuery)
+        public async Task<IActionResult> Create([FromBody] string query)
         {
             try
             {
-                var game = await _gameApiService.CreateGameAsync(gameQuery);
+                var book = await _bookApiService.CreateBookAsync(query);
 
-                var gameDTO = _gameDTOMapper.MapToDTO(game);
-                return CreatedAtAction(nameof(GetById), new { id = game.Id }, gameDTO);
+                var bookDTO = _bookDTOMapper.MapToDTO(book);
+                return CreatedAtAction(nameof(GetById), new { id = book.Id }, bookDTO);
             }
             catch (Exception ex)
             {
@@ -52,55 +51,59 @@ namespace WhatsJustLike24.Server.Controllers
             }
         }
 
-        // READ: GET /Games/5
+        // READ: GET /Book/5
         [HttpGet("{id}"), AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
-            var game = await _context.Games.FindAsync(id);
+            var book = await _context.Books.FindAsync(id);
 
-            if (game == null)
+            if (book == null)
             {
                 return NotFound();
             }
 
-            return Ok(game);
+            return Ok(book);
         }
 
         [HttpGet("DetailsByTitle"), AllowAnonymous]
-        public async Task<ActionResult<GameDetailsAndTitleDTO>> GetGameDetailsByTitle(string title)
+        public async Task<ActionResult<BookDetailsAndTitleDTO>> GetBookDetailsByTitle(string title)
         {
-            var result = from game in _context.Games
-                         join detail in _context.GameDetails
-                         on game.Id equals detail.GameId
-                         where game.Title == title
+            var result = from book in _context.Books
+                         join detail in _context.BookDetails
+                         on book.Id equals detail.BookId
+                         where book.Title == title
                          select new
                          {
-                             game.Title,
+                             book.Title,
                              detail.Genre,
-                             detail.Developer,
+                             detail.Author,
                              detail.FirstRelease,
                              detail.Cover,
-                             detail.Platforms,
-                             detail.Description
+                             detail.Publisher,
+                             detail.Description,
+                             detail.Isbn,
+                             detail.Series,
+                             detail.Pages,
+                             detail.Languages
                          };
 
-            var gameData = result.FirstOrDefault();
+            var data = result.FirstOrDefault();
 
-            if (gameData == null)
+            if (data == null)
             {
                 return NotFound();
             }
 
-            return Ok(gameData);
+            return Ok(data);
         }
 
         //[Authorize]
         [HttpGet("SimilarByTitle"), AllowAnonymous]
-        public async Task<ActionResult<List<SimilarityByTitleDTO>>> GetSimilarGamesByTitle(string title)
+        public async Task<ActionResult<List<SimilarityByTitleDTO>>> GetSimilarBooksByTitle(string title)
         {
-            var similarGames = await _context.GetGameSimilarityDetails(title).ToListAsync();
+            var similarBooks = await _context.GetBookSimilarityDetails(title).ToListAsync();
 
-            return similarGames.Select(m => new SimilarityByTitleDTO
+            return similarBooks.Select(m => new SimilarityByTitleDTO
             {
                 Title = m.Title,
                 PosterPath = m.PosterPath ?? "1E5baAaEse26fej7uHcjOgEE2t2.jpg",
@@ -129,7 +132,7 @@ namespace WhatsJustLike24.Server.Controllers
                     await connection.OpenAsync();
                     var command = new SqlCommand(@"
                         SELECT TOP 1 A.Title
-                        FROM Games AS A
+                        FROM Books AS A
                         ORDER BY DIFFERENCE(@Title, A.Title) DESC, dbo.LEVENSHTEIN(@Title, A.Title) ASC", connection);
                     command.Parameters.AddWithValue("@Title", title);
 
@@ -156,78 +159,77 @@ namespace WhatsJustLike24.Server.Controllers
             }
         }
 
-        // POST: /Games/AddSimilarity
+        // POST: /Books/AddSimilarity
         [HttpPost("AddSimilarity"), AllowAnonymous]
-        public async Task<IActionResult> AddGameSimilarity([FromBody] SimilarityRequest request)
+        public async Task<IActionResult> AddBookSimilarity([FromBody] SimilarityRequest request)
         {
-            Game gameA = await _context.Games
+            Book bookA = await _context.Books
                 .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleA.ToLower())
-                ?? await _gameApiService.CreateGameAsync(request.TitleA);
-            Game gameB = await _context.Games
+                ?? await _bookApiService.CreateBookAsync(request.TitleA);
+            Book bookB = await _context.Books
                 .FirstOrDefaultAsync(m => m.Title.ToLower() == request.TitleB.ToLower())
-                ?? await _gameApiService.CreateGameAsync(request.TitleB);
+                ?? await _bookApiService.CreateBookAsync(request.TitleB);
 
-            bool isNewGameA = gameA.Id == 0;
-            bool isNewGameB = gameB.Id == 0;
+            bool isNewBookA = bookA.Id == 0;
+            bool isNewBookB = bookB.Id == 0;
 
-            if (isNewGameA)
+            if (isNewBookA)
             {
-                _context.Games.Add(gameA);
+                _context.Books.Add(bookA);
             }
-            if (isNewGameB)
+            if (isNewBookB)
             {
-                _context.Games.Add(gameB);
+                _context.Books.Add(bookB);
             }
 
             // Save the games if they are new
-            if (isNewGameA || isNewGameB)
+            if (isNewBookA || isNewBookB)
             {
                 await _context.SaveChangesAsync();
             }
 
-            GameIsLike existingSimilarity = await _context.GameIsLike
-                .FirstOrDefaultAsync(il => (il.GameIdA == gameA.Id && il.GameIdB == gameB.Id) ||
-                (il.GameIdA == gameB.Id && il.GameIdB == gameA.Id));
+            BookIsLike existingSimilarity = await _context.BookIsLike
+                .FirstOrDefaultAsync(il => (il.BookIdA == bookA.Id && il.BookIdB == bookB.Id) ||
+                (il.BookIdA == bookB.Id && il.BookIdB == bookA.Id));
 
             if (existingSimilarity == null)
             {
-                existingSimilarity = new GameIsLike
+                existingSimilarity = new BookIsLike
                 {
-                    GameIdA = gameA.Id,
-                    GameIdB = gameB.Id
+                    BookIdA = bookA.Id,
+                    BookIdB = bookB.Id
                 };
 
-                _context.GameIsLike.Add(existingSimilarity);
+                _context.BookIsLike.Add(existingSimilarity);
                 await _context.SaveChangesAsync();
             }
 
-            var gameIsLikeDto = new GameIsLikeDTO
+            var BookIsLikeDto = new BookIsLikeDTO
             {
                 Id = existingSimilarity.Id,
-                GameIdA = existingSimilarity.GameIdA,
-                GameIdB = existingSimilarity.GameIdB,
+                BookIdA = existingSimilarity.BookIdA,
+                BookIdB = existingSimilarity.BookIdB,
             };
 
-            var similarityDetail = new GameIsLikeDetails
+            var similarityDetail = new BookIsLikeDetails
             {
-                GameIsLikeId = existingSimilarity.Id,
+                BookIsLikeId = existingSimilarity.Id,
                 SimilarityScore = request.SimilarityScore,
                 Description = request.Description
             };
 
-            _context.GameIsLikeDetails.Add(similarityDetail);
+            _context.BookIsLikeDetails.Add(similarityDetail);
             await _context.SaveChangesAsync();
 
-            var gameIsLikeDetailDto = new GameIsLikeDetailDTO
+            var bookIsLikeDetailDto = new BookIsLikeDetailDTO
             {
                 Id = similarityDetail.Id,
-                GameIsLikeId = similarityDetail.GameIsLikeId,
+                BookIsLikeId = similarityDetail.BookIsLikeId,
                 SimilarityScore = similarityDetail.SimilarityScore,
                 Description = similarityDetail.Description
             };
 
-            return Ok(new { Similarity = gameIsLikeDto, Details = gameIsLikeDetailDto });
-        }*/
-
+            return Ok(new { Similarity = BookIsLikeDto, Details = bookIsLikeDetailDto });
+        }
     }
 }

@@ -65,12 +65,19 @@ namespace WhatsJustLike24.Server.Services
                 // Upload image to Blob Storage
                 var blobName = await _imageBlobService.UploadImageFromUrlAsync(imagePath, "movies");
 
+                JsonElement genreIds = firstResult.GetProperty("genre_ids");
+                List<string> genreList = new List<string>();
+                foreach ( var genre in genreIds.EnumerateArray()) 
+                {
+                    genreList.Add(MovieGenres[genre.GetInt32()]);
+                }
                 return new MovieDBMovieDTO
                 {
                     OriginalLanguage = firstResult.GetProperty("original_language").GetString(),
                     OriginalTitle = firstResult.GetProperty("title").GetString(),
                     Summary = firstResult.GetProperty("overview").GetString(),
-                    PosterPath = blobName
+                    PosterPath = blobName,
+                    Genres = string.Join(", ", genreList)
                 };
             }
             catch (Exception ex)
@@ -111,7 +118,7 @@ namespace WhatsJustLike24.Server.Services
                     Description = movieData.Summary,
                     PosterPath = movieData.PosterPath,
                     Director = "Placeholder",
-                    Genre = "Placeholder"
+                    Genre = movieData.Genres ?? ""
                 }
             };
 
@@ -120,5 +127,28 @@ namespace WhatsJustLike24.Server.Services
 
             return movie;
         }
+
+        private Dictionary<int, string> MovieGenres = new Dictionary<int, string>()
+        {
+            {12, "Adventure" },
+            {14, "Fantasy" },
+            {16, "Animation" },
+            {18, "Drama" },
+            {27, "Horror" },
+            {28, "Action" },
+            {35, "Comedy" },
+            {36, "History" },
+            {37, "Western" },
+            {53, "Thriller" },
+            {80, "Crime" },
+            {99, "Documentary" },
+            {878, "Science Fiction" },
+            {9648, "Mystery" },
+            {10402, "Music" },
+            {10749, "Romance" },
+            {10751, "Family" },
+            {10752, "War" },
+            {10770, "TV Movie" }
+        };
     }
 }

@@ -166,8 +166,12 @@ namespace WhatsJustLike24.Server.Services
                     Cover = bookData.Cover,
                     Author = bookData.Author,
                     Genre = bookData.Genre,
-                    FirstRelease = bookData.FirstRelease,
-
+                    FirstRelease = new DateTime(bookData.FirstRelease?? 0000,1,1),
+                    Publisher = bookData.Publisher,
+                    Isbn = bookData.Isbn,
+                    Languages = bookData.Languages,
+                    Pages = bookData.Pages,
+                    Series = bookData.Series
                 }
             };
 

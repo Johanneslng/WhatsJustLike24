@@ -9,6 +9,7 @@ import { ContentRelation } from 'src/app/models/ContentRelation';
 import { ContentType } from 'src/app/models/Enums/ContentType';
 import { IPostContentService } from 'src/app/models/IPostContentService';
 import { ContentTypeSingular } from 'src/app/helpers/ContentTypeSingular';
+import { PostBooksService } from 'src/app/services/apiCalls/post-books.service';
 
 @Component({
   selector: 'app-add-content-dialog',
@@ -25,6 +26,7 @@ export class AddContentDialogComponent {
     private postMoviesService: PostMoviesService,
     private postGamesService: PostGamesService,
     private postShowsService: PostShowsService,
+    private postBooksService: PostBooksService,
     private userService: UserService,
     public dialog: MatDialog,
   ) {
@@ -32,7 +34,7 @@ export class AddContentDialogComponent {
       [ContentType.Movies]: this.postMoviesService,
       [ContentType.Games]: this.postGamesService,
       [ContentType.Shows]: this.postShowsService,
-      [ContentType.Books]: this.postGamesService,
+      [ContentType.Books]: this.postBooksService,
     };
 
   }

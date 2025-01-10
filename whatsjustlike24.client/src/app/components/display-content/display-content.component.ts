@@ -6,7 +6,6 @@ import {
   ElementRef,
   ViewChild
 } from '@angular/core';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { GetMoviesService } from 'src/app/services/apiCalls/get-movies.service';
 import { GetGamesService } from 'src/app/services/apiCalls/get-games.service';
 import { GetShowsService } from 'src/app/services/apiCalls/get-shows.service';
@@ -22,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { IContentService } from 'src/app/models/IContentService';
 import { ContentWithDetails, GameWithDetails, MovieWithDetails } from 'src/app/models/ContentWithDetails';
 import { ContentTypeSingular } from 'src/app/helpers/ContentTypeSingular';
+import { GetBooksService } from 'src/app/services/apiCalls/get-books.service';
 
 
 @Component({
@@ -64,6 +64,7 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
     private getMoviesService: GetMoviesService,
     private getGamesService: GetGamesService,
     private getShowsService: GetShowsService,
+    private getBooksService: GetBooksService,
     private setSearchValueService: SetSearchValueService,
     public dialog: MatDialog
   )
@@ -84,10 +85,10 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
         fetchContent: (searchValue: string) => this.fetchContent(this.serviceMapping[ContentType.Shows], searchValue),
         fetchSimilarTitle: (searchValue: string) => this.fetchSimilarTitle(this.serviceMapping[ContentType.Shows], searchValue),
       },
-      [ContentType.Books]: { //TODO Exchange to books
-        fetchDetails: (searchValue: string) => this.fetchDetails(this.serviceMapping[ContentType.Games], searchValue),
-        fetchContent: (searchValue: string) => this.fetchContent(this.serviceMapping[ContentType.Games], searchValue),
-        fetchSimilarTitle: (searchValue: string) => this.fetchSimilarTitle(this.serviceMapping[ContentType.Games], searchValue),
+      [ContentType.Books]: { 
+        fetchDetails: (searchValue: string) => this.fetchDetails(this.serviceMapping[ContentType.Books], searchValue),
+        fetchContent: (searchValue: string) => this.fetchContent(this.serviceMapping[ContentType.Books], searchValue),
+        fetchSimilarTitle: (searchValue: string) => this.fetchSimilarTitle(this.serviceMapping[ContentType.Books], searchValue),
       },
     };
 
@@ -95,7 +96,7 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
       [ContentType.Movies]: this.getMoviesService,
       [ContentType.Games]: this.getGamesService,
       [ContentType.Shows]: this.getShowsService,
-      [ContentType.Books]: this.getGamesService
+      [ContentType.Books]: this.getBooksService
     };
   }
 
@@ -171,6 +172,8 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
         return 'games/';
       case ContentType.Shows:
         return 'shows/';
+      case ContentType.Books:
+        return 'books/';
       default:
         return '';
     }
@@ -221,6 +224,14 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
             console.log('Processed show details:', this.searchContent);
             break;
 
+          case 'Book':
+            this.searchContent = {
+              ...response,
+              image: this.imageUrl + 'books/' + response.image
+            };
+            console.log('Processed book details:', this.searchContent);
+            break;
+
           default:
             console.error('Unknown content type:', response);
             break;
@@ -261,6 +272,14 @@ export class DisplayContentComponent implements OnInit, OnDestroy {
             this.similarContent = response.map(content => ({
               ...content,
               image: this.imageUrl + 'shows/' + content.image
+
+            }));
+            break;
+
+          case ContentType.Books:
+            this.similarContent = response.map(content => ({
+              ...content,
+              image: this.imageUrl + 'books/' + content.image
 
             }));
             break;

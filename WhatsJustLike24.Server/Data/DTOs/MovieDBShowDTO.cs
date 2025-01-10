@@ -7,5 +7,6 @@
         public string Summary { get; set; }
         public string PosterPath { get; set; }
         public DateTime? FirstAirDate { get; set; }
+        public string? Genres { get; set; }
     }
 }
