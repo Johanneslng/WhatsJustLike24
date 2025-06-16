@@ -1,6 +1,6 @@
 # 📚🎮 WhatsJustLike 🎬📺
 
-**WhatsJustLike** is a web platform that helps users discover **similar movies, TV shows, video games, or books** based on user-generated recommendations. Type in any title you love, and instantly get suggestions for content that's just like it — curated by the community.
+**WhatsJustLike** is a web platform that helps users discover **similar movies, TV shows, video games, or books** based on user-generated recommendations. Type in any title you love, and instantly get suggestions for content that's just like it.
 
 ## 🚀 What It Does
 
@@ -18,3 +18,9 @@ Ever wondered what to watch, play, or read next after finishing your favorite st
 - **Backend**: ASP.NET/C#
 - **Database**: SQL Server on Azure
 - **Hosting**: tbd.
+
+
+<br>
+<br>
+
+![](whatsjustlikegif.gif)
